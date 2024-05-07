@@ -3,13 +3,13 @@ config();
 
 const isProduction = process.env.NODE_ENV === "production";
 
-export const port = parseInt(process.env.PORT || "3000");
+export const PORT = parseInt(process.env.PORT || "3000");
 
-export const startupMessage = isProduction
-  ? `Server is running at port ${port}`
-  : `Server is running at http://localhost:${port}`;
+const BASE_URL = process.env.BASE_URL ?? "http://localhost";
 
-export const smtpConfig = {
+export const WEBSITE_URL = BASE_URL + (isProduction ? "" : `:${PORT}`);
+
+export const SMTP_CONFIG = {
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT!),
   secure: true,
@@ -19,9 +19,9 @@ export const smtpConfig = {
   },
 };
 
-export const smtpEmail = process.env.SMTP_EMAIL!;
+export const SMTP_EMAIL = process.env.SMTP_EMAIL!;
 
-export const dbConfig = {
+export const DB_CONFIG = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
@@ -29,4 +29,4 @@ export const dbConfig = {
   port: parseInt(process.env.DB_PORT!),
 };
 
-export const cookieSecret = process.env.COOKIE_SECRET!;
+export const COOKIE_SECRET = process.env.COOKIE_SECRET!;

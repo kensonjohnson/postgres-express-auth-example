@@ -2,11 +2,11 @@
 import MagicLink from "passport-magic-link";
 import { pool } from "../../db/db.js";
 import { transporter } from "../nodemailer/transporter.js";
-import { cookieSecret, smtpEmail } from "../../constants.js";
+import { COOKIE_SECRET, WEBSITE_URL, SMTP_EMAIL } from "../../constants.js";
 
 export const MagicLinkStrategy = new MagicLink.Strategy(
   {
-    secret: cookieSecret,
+    secret: COOKIE_SECRET,
     userFields: ["email"],
     tokenField: "token",
     verifyUserAfterToken: true,
@@ -16,10 +16,10 @@ export const MagicLinkStrategy = new MagicLink.Strategy(
 );
 
 function sendEmailToUser(user: Express.User, token: string) {
-  const link = "http://localhost:5173/auth/email/verify?token=" + token;
+  const link = WEBSITE_URL + "/auth/email/verify?token=" + token;
   const msg = {
     to: user.email,
-    from: smtpEmail,
+    from: SMTP_EMAIL,
     subject: "Sign in to Test Website",
     text:
       "Hello! Click the link below to finish signing in to Todos.\r\n\r\n" +

@@ -1,4 +1,4 @@
 import { createTransport } from "nodemailer";
-import { smtpConfig } from "../../constants.js";
+import { SMTP_CONFIG } from "../../constants.js";
 
-export const transporter = createTransport(smtpConfig);
+export const transporter = createTransport(SMTP_CONFIG);

@@ -4,7 +4,7 @@ import session from "express-session";
 import connectPG from "connect-pg-simple";
 import { pool as pgPool } from "../../db/db.js";
 import passport from "passport";
-import { cookieSecret } from "../../constants.js";
+import { COOKIE_SECRET } from "../../constants.js";
 
 export function configurePassport(app: Express) {
   // Create session store
@@ -15,7 +15,7 @@ export function configurePassport(app: Express) {
       store: new pgSession({
         pool: pgPool,
       }),
-      secret: cookieSecret,
+      secret: COOKIE_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 Day expiration
