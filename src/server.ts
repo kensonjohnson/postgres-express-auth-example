@@ -1,5 +1,6 @@
 import express from "express";
 import { configurePassport } from "./controllers/passport/passport.js";
+import { port, startupMessage } from "./constants.js";
 
 const app = express();
 
@@ -27,6 +28,4 @@ app.use("/list", ensureAuthenticated, listRouter);
 app.all("*", catchUnmatchedRequestAndRedirectEncoded);
 
 // Start server
-app.listen(3000, () => {
-  console.log("Server is running at http://localhost:3000");
-});
+app.listen(port, () => console.log(startupMessage));
