@@ -1,13 +1,9 @@
 import { config } from "dotenv";
 config();
 
-const isProduction = process.env.NODE_ENV === "production";
-
 export const port = parseInt(process.env.PORT || "3000");
 
-export const startupMessage = isProduction
-  ? `Server is running at port ${port}`
-  : `Server is running at http://localhost:${port}`;
+export const websiteUrl = process.env.BASE_URL ?? `http://localhost:${port}`;
 
 export const smtpConfig = {
   host: process.env.SMTP_HOST,
