@@ -32,7 +32,7 @@ function sendEmailToUser(user: Express.User, token: string) {
   return transporter.sendMail(msg);
 }
 
-function verifyUser(user: { id: number; email: string }) {
+function verifyUser(user: Express.User) {
   return new Promise(async (resolve, reject) => {
     try {
       // Check for the user's email in the database
