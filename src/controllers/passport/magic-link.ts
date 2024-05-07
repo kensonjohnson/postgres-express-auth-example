@@ -2,7 +2,7 @@
 import MagicLink from "passport-magic-link";
 import { pool } from "../../db/db.js";
 import { transporter } from "../nodemailer/transporter.js";
-import { cookieSecret, smtpEmail } from "../../constants.js";
+import { cookieSecret, websiteUrl, smtpEmail } from "../../constants.js";
 
 export const MagicLinkStrategy = new MagicLink.Strategy(
   {
@@ -16,7 +16,7 @@ export const MagicLinkStrategy = new MagicLink.Strategy(
 );
 
 function sendEmailToUser(user: Express.User, token: string) {
-  const link = "http://localhost:5173/auth/email/verify?token=" + token;
+  const link = websiteUrl + "/auth/email/verify?token=" + token;
   const msg = {
     to: user.email,
     from: smtpEmail,
