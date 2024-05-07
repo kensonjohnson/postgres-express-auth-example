@@ -1,6 +1,6 @@
 import express from "express";
 import { configurePassport } from "./controllers/passport/passport.js";
-import { port, websiteUrl } from "./constants.js";
+import { PORT, WEBSITE_URL } from "./constants.js";
 
 const app = express();
 
@@ -28,4 +28,4 @@ app.use("/list", ensureAuthenticated, listRouter);
 app.all("*", catchUnmatchedRequestAndRedirectEncoded);
 
 // Start server
-app.listen(port, () => console.log(`Server is running at ${websiteUrl}`));
+app.listen(PORT, () => console.log(`Server is running at ${WEBSITE_URL}`));
