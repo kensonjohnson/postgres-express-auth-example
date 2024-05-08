@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { pool } from "../db/db.js";
 
+// TODO: Attempt to get lists and tasks in a single query
 export async function getLists(req: Request, res: Response) {
   try {
     const userId = req.user!.id;
@@ -10,7 +11,20 @@ export async function getLists(req: Request, res: Response) {
 
     if (!query) throw new Error("Failed to fetch lists.");
 
-    res.status(200).json(query.rows);
+    const lists = query.rows;
+
+    const formattedLists = lists.map(async (list) => {
+      const tasksQuery = await pool.query(
+        "SELECT * FROM task WHERE list_id = $1",
+        [list.id]
+      );
+
+      list.tasks = tasksQuery.rows;
+    });
+
+    await Promise.all(formattedLists);
+
+    res.status(200).json(lists);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch lists." });
