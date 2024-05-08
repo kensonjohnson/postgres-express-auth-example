@@ -10,7 +10,6 @@ export async function action({ request }: ActionFunctionArgs) {
       "Content-Type": "application/json",
     },
   });
-  console.log("response", response);
   if (response.ok) {
     return redirect("/login/check-email");
   }

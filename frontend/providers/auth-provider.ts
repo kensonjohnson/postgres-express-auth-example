@@ -8,7 +8,6 @@ export class AuthProvider {
   }
 
   async authenticate() {
-    console.log("Fire authenticate");
     try {
       const response = await fetch("/user");
       if (!response.ok)
