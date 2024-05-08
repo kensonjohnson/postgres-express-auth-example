@@ -10,4 +10,14 @@ declare type List = {
   user_id: number;
   created_on: Date;
   last_updated: Date;
+  tasks: Task[];
+};
+
+declare type Task = {
+  id: number;
+  title: string;
+  description: string;
+  list_id: number;
+  created_on: Date;
+  last_updated: Date;
 };
