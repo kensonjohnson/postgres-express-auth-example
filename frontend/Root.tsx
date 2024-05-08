@@ -24,7 +24,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   await authProvider.authenticate();
-  return { user: authProvider.user, loggedIn: authProvider.isAuthenticated };
+  return {
+    user: authProvider.user,
+    loggedIn: authProvider.isAuthenticated,
+  };
 }
 
 export function Root() {
@@ -32,9 +35,7 @@ export function Root() {
   return (
     <>
       <Header loggedIn={loggedIn} />
-      <main>
-        <Outlet />
-      </main>
+      <Outlet />
     </>
   );
 }
