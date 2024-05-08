@@ -1,0 +1,23 @@
+.container {
+  display: grid;
+  height: 100%;
+  grid-template-areas:
+    "header header header"
+    "sidebar content content";
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.dashboard-bar {
+  display: flex;
+  grid-area: header;
+  border-bottom: solid 1px var(--color);
+  padding-left: 1rem;
+  justify-content: center;
+}
+
+.glow {
+  color: yellow;
+  font-weight: normal;
+  text-align: center;
+  text-shadow: 0 0 2px yellow, 0 0 5px yellow;
+}
