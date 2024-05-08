@@ -5,7 +5,9 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
+  --color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+  --background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,11 +15,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  place-items: center;
+}
+
+body {
+  margin: 0;
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -30,9 +38,9 @@ h1 {
 a {
   text-decoration: none;
   color: inherit;
+  font-size: 1em;
 }
 
-button,
 .button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -44,12 +52,11 @@ button,
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover,
+
 .button:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible,
+
 .button:focus,
 .button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -58,12 +65,14 @@ button:focus-visible,
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
+    --color: #213547;
     background-color: #ffffff;
+    --background-color: #ffffff;
   }
   a:hover {
     color: #747bff;
   }
-  button,
+
   .button {
     background-color: #f9f9f9;
   }
