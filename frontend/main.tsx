@@ -8,11 +8,16 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./error-page.tsx";
 import { Root, loader as rootLoader } from "./Root.tsx";
 import { Index } from "./routes/Index.tsx";
-import { Dashboard, loader as dashboardLoader } from "./routes/Dashboard.tsx";
+import {
+  Dashboard,
+  loader as dashboardLoader,
+} from "./routes/Dashboard/Dashboard.tsx";
 import { CheckEmail } from "./routes/CheckEmail.tsx";
 import { Account } from "./routes/Account.tsx";
 import { action as loginAction } from "./routes/Login.tsx";
 import { action as logoutAction } from "./routes/Logout.tsx";
+import { Tasks } from "./routes/Tasks/Tasks.tsx";
+import { action as addListAction } from "./routes/AddList/AddList.tsx";
 
 const router = createBrowserRouter([
   {
@@ -30,11 +35,13 @@ const router = createBrowserRouter([
             path: "dashboard",
             element: <Dashboard />,
             loader: dashboardLoader,
+            children: [{ path: ":listId", element: <Tasks /> }],
           },
           { path: "login/check-email", element: <CheckEmail /> },
           { path: "account", element: <Account /> },
           { path: "login/email", action: loginAction },
           { path: "logout", action: logoutAction },
+          { path: "add/list", action: addListAction },
         ],
       },
     ],
