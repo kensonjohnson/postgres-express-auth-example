@@ -15,7 +15,12 @@ export function Logout() {
       method="post"
     >
       <button
-        style={{ background: "none", border: 0, fontSize: "inherit" }}
+        style={{
+          background: "none",
+          border: 0,
+          fontSize: "inherit",
+          cursor: "pointer",
+        }}
         type="submit"
       >
         Logout
