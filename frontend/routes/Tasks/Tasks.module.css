@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  grid-area: content;
+  min-width: 320px;
+}
+
+.tasks {
+  display: flex;
+  padding: 0;
+  flex-direction: column;
+  margin: 0;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.tasks li:last-child {
+  border-bottom: none;
+}

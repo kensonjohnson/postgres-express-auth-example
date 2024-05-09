@@ -1,12 +1,16 @@
 import {
-  Link,
   Outlet,
-  useLoaderData,
-  Form,
   LoaderFunctionArgs,
   redirect,
+  useLoaderData,
 } from "react-router-dom";
 import { authProvider } from "./providers/auth-provider";
+import { Header } from "./components/Header/Header";
+
+type RootLoaderData = {
+  user: User | null;
+  loggedIn: boolean;
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
   // Check if redirect is sent from the server
@@ -20,46 +24,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   await authProvider.authenticate();
-  return { user: authProvider.user };
+  return {
+    user: authProvider.user,
+    loggedIn: authProvider.isAuthenticated,
+  };
 }
 
 export function Root() {
-  const { user } = useLoaderData() as { user?: User };
-
+  const { loggedIn } = useLoaderData() as RootLoaderData;
   return (
-    <main>
-      <header
-        style={{
-          marginBottom: "2rem",
-        }}
-      >
-        <nav style={{ display: "flex", gap: "2rem", marginTop: "1rem" }}>
-          {!user && (
-            <Link to={"/"} className="button">
-              Home
-            </Link>
-          )}
-          {user && (
-            <Link to={"/dashboard"} className="button">
-              Dashboard
-            </Link>
-          )}
-          {user && (
-            <Link to={"/account"} className="button">
-              Account
-            </Link>
-          )}
-          {/* logout */}
-          {user && (
-            <Form action="/logout" method="post">
-              <button type="submit" style={{ cursor: "pointer" }}>
-                Logout
-              </button>
-            </Form>
-          )}
-        </nav>
-      </header>
+    <>
+      <Header loggedIn={loggedIn} />
       <Outlet />
-    </main>
+    </>
   );
 }

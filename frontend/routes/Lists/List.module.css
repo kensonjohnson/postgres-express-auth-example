@@ -1,0 +1,17 @@
+.li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.link {
+  text-decoration: none;
+  color: var(--color);
+  font-size: 1.2em;
+}
+
+.link.selected {
+  color: lightblue;
+  text-shadow: 0 0 2px lightblue, 0 0 3px lightblue;
+}

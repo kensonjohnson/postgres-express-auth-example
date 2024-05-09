@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { pool } from "../db/db.js";
 
+// TODO: Attempt to get lists and tasks in a single query
 export async function getLists(req: Request, res: Response) {
   try {
     const userId = req.user!.id;
@@ -10,7 +11,20 @@ export async function getLists(req: Request, res: Response) {
 
     if (!query) throw new Error("Failed to fetch lists.");
 
-    res.status(200).json(query.rows);
+    const lists = query.rows;
+
+    const formattedLists = lists.map(async (list) => {
+      const tasksQuery = await pool.query(
+        "SELECT * FROM task WHERE list_id = $1",
+        [list.id]
+      );
+
+      list.tasks = tasksQuery.rows;
+    });
+
+    await Promise.all(formattedLists);
+
+    res.json(lists);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch lists." });
@@ -74,16 +88,12 @@ export async function updateList(req: Request, res: Response) {
 
 export async function deleteList(req: Request, res: Response) {
   try {
-    const userId = req.user!.id;
     const { id } = req.params;
-    const query = await pool.query(
-      "DELETE FROM list WHERE id = $1 AND user_id = $2 RETURNING *",
-      [id, userId]
-    );
+    const query = await pool.query("DELETE FROM list WHERE id = $1", [id]);
 
     if (!query) throw new Error("Failed to delete list.");
 
-    res.status(200).json(query.rows[0]);
+    res.json({ message: "List deleted." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete list." });
