@@ -17,14 +17,16 @@ configurePassport(app);
 // Routes
 import authRouter from "./routes/auth.js";
 import userController from "./routes/user.js";
-import { ensureAuthenticated } from "./controllers/auth-controller.js";
 import listRouter from "./routes/list.js";
+import taskRouter from "./routes/task.js";
+import { ensureAuthenticated } from "./controllers/auth-controller.js";
 import { catchUnmatchedRequestAndRedirectEncoded } from "./controllers/root-controller.js";
 
 // app.use("/", rootRouter); // serve static files
 app.use("/auth", authRouter);
 app.use("/user", ensureAuthenticated, userController);
 app.use("/list", ensureAuthenticated, listRouter);
+app.use("/task", ensureAuthenticated, taskRouter);
 app.all("*", catchUnmatchedRequestAndRedirectEncoded);
 
 // Start server
