@@ -7,12 +7,21 @@ import { Task } from "./Task";
 
 export function Tasks() {
   const { lists } = useLists();
-  console.log("Lists in Tasks: ", lists);
+  console.log("Lists in Tasks: ", lists?.length, lists);
   const { listId } = useParams() as { listId: string };
   console.log("List ID: ", listId);
-  const list = lists.find((list) => list.id === parseInt(listId)) as List;
+  const list = lists.find((list) => {
+    console.log(
+      "In find: ",
+      typeof list.id,
+      list.id,
+      typeof listId,
+      parseInt(listId)
+    );
+    return list.id == parseInt(listId);
+  }) as List;
   console.log("List: ", list);
-  if (!list?.tasks?.length) {
+  if (!list?.tasks || list.tasks.length === 0) {
     return (
       <div className={styles.container}>
         <h2>Tasks</h2>
