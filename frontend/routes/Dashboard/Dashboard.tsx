@@ -16,7 +16,6 @@ export async function loader() {
   if (!response.ok) return { list: [] };
 
   const lists = await response.json();
-  console.log("Lists in Dashboard: ", lists.length);
 
   return { lists };
 }
@@ -37,6 +36,5 @@ export function Dashboard() {
 }
 
 export function useLists() {
-  console.log("Inside useLists");
   return useOutletContext<{ lists: List[] }>();
 }

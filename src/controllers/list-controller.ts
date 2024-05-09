@@ -3,7 +3,6 @@ import { pool } from "../db/db.js";
 
 // TODO: Attempt to get lists and tasks in a single query
 export async function getLists(req: Request, res: Response) {
-  console.log("Inside getLists");
   try {
     const userId = req.user!.id;
     const query = await pool.query("SELECT * FROM list WHERE user_id = $1", [
@@ -19,7 +18,6 @@ export async function getLists(req: Request, res: Response) {
         "SELECT * FROM task WHERE list_id = $1",
         [list.id]
       );
-      console.log("Tasks Query: ", tasksQuery.rows, tasksQuery.rowCount);
 
       list.tasks = tasksQuery.rows;
     });
