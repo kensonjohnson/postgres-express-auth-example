@@ -87,12 +87,9 @@ export async function updateList(req: Request, res: Response) {
 }
 
 export async function deleteList(req: Request, res: Response) {
-  console.log("Entered deleteList");
   try {
     const { id } = req.params;
-    console.log("Id:", id);
     const query = await pool.query("DELETE FROM list WHERE id = $1", [id]);
-    console.log("query:", query);
 
     if (!query) throw new Error("Failed to delete list.");
 

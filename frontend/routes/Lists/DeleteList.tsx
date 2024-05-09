@@ -12,11 +12,9 @@ export async function action({ params }: ActionFunctionArgs) {
   const response = await fetch(`/list/delete/${id}`, {
     method: "DELETE",
   });
-  console.log("Response", response.ok);
   if (!response.ok) {
     return new Response("Failed to delete list", { status: 500 });
   }
-  console.log("response", response);
   return redirect("/dashboard");
 }
 

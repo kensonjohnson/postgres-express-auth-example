@@ -10,7 +10,6 @@ export async function action({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
     const id = formData.get("id");
     const completed = formData.get("completed") === "on";
-    console.log("id", id, "completed", completed);
     const response = await fetch("/task/update/completed", {
       method: "POST",
       body: JSON.stringify({ id, completed }),
