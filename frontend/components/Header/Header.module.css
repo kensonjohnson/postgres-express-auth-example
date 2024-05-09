@@ -1,8 +1,10 @@
 .header {
   display: flex;
   background-color: var(--background-color);
-  padding: 1rem;
+  padding: 0.5rem;
   border-bottom: 1px solid var(--color);
+  border-top: 1px solid var(--color);
+  height: 4rem;
 }
 
 .nav {

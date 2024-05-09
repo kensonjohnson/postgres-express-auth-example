@@ -1,7 +1,14 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  min-height: 100vh;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -15,22 +22,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 640px;
+  min-height: 100vh;
+}
+
 #root {
   max-width: 1280px;
   min-height: 100vh;
+  height: 100%;
+  height: inherit;
   margin: 0 auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--color);
   border-right: 1px solid var(--color);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  min-width: 640px;
-  min-height: 100vh;
 }
 
 h1 {

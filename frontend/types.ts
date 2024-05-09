@@ -20,4 +20,5 @@ declare type Task = {
   list_id: number;
   created_on: Date;
   last_updated: Date;
+  completed: boolean;
 };

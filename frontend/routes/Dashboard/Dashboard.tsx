@@ -5,7 +5,7 @@ import {
   useOutletContext,
 } from "react-router-dom";
 import { authProvider } from "../../providers/auth-provider";
-import { Lists } from "../../components/Lists/Lists";
+import { Lists } from "../Lists/Lists";
 import styles from "./Dashboard.module.css";
 
 export async function loader() {
