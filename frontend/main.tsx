@@ -18,6 +18,10 @@ import { action as loginAction } from "./routes/Login.tsx";
 import { action as logoutAction } from "./routes/Logout.tsx";
 import { Tasks } from "./routes/Tasks/Tasks.tsx";
 import { action as addListAction } from "./routes/AddList/AddList.tsx";
+import { action as addTaskAction } from "./routes/Tasks/AddTask.tsx";
+import { action as completeAction } from "./routes/Tasks/Completed.tsx";
+import { action as deleteListAction } from "./routes/Lists/DeleteList.tsx";
+import { action as deleteTaskAction } from "./routes/Tasks/DeleteTask.tsx";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +46,10 @@ const router = createBrowserRouter([
           { path: "login/email", action: loginAction },
           { path: "logout", action: logoutAction },
           { path: "add/list", action: addListAction },
+          { path: "add/task", action: addTaskAction },
+          { path: "update/task/completed", action: completeAction },
+          { path: "delete/list/:id", action: deleteListAction },
+          { path: "delete/task", action: deleteTaskAction },
         ],
       },
     ],
