@@ -7,6 +7,7 @@ import { Task } from "./Task";
 
 export function Tasks() {
   const lists = useLists();
+  console.log("Lists: ", lists);
   const { listId } = useParams() as { listId: string };
 
   const list = lists.find((list) => list.id === parseInt(listId)) as List;

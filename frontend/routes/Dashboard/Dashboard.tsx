@@ -16,6 +16,7 @@ export async function loader() {
   if (!response.ok) return { list: [] };
 
   const lists = await response.json();
+  console.log("Lists in Dashboard: ", lists);
 
   return { lists };
 }
@@ -30,11 +31,12 @@ export function Dashboard() {
         <h2>Welcome {user.email}!</h2>
       </div>
       <Lists lists={lists} />
-      <Outlet context={lists satisfies List[]} />
+      <Outlet context={{ lists } satisfies { lists: List[] }} />
     </section>
   );
 }
 
 export function useLists() {
+  console.log("Inside useLists");
   return useOutletContext<List[]>();
 }
