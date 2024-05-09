@@ -11,7 +11,7 @@ export function Tasks() {
   const { listId } = useParams() as { listId: string };
 
   const list = lists.find((list) => list.id === parseInt(listId)) as List;
-
+  console.log("List: ", list, list.tasks);
   if (!list.tasks.length) {
     return (
       <div className={styles.container}>
