@@ -24,7 +24,7 @@ export async function getLists(req: Request, res: Response) {
 
     await Promise.all(formattedLists);
 
-    res.status(200).json(lists);
+    res.json(lists);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch lists." });
@@ -87,17 +87,16 @@ export async function updateList(req: Request, res: Response) {
 }
 
 export async function deleteList(req: Request, res: Response) {
+  console.log("Entered deleteList");
   try {
-    const userId = req.user!.id;
     const { id } = req.params;
-    const query = await pool.query(
-      "DELETE FROM list WHERE id = $1 AND user_id = $2 RETURNING *",
-      [id, userId]
-    );
+    console.log("Id:", id);
+    const query = await pool.query("DELETE FROM list WHERE id = $1", [id]);
+    console.log("query:", query);
 
     if (!query) throw new Error("Failed to delete list.");
 
-    res.status(200).json(query.rows[0]);
+    res.json({ message: "List deleted." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete list." });
