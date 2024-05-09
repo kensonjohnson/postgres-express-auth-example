@@ -6,7 +6,7 @@ import { v4 as uuidV4 } from "uuid";
 import { Task } from "./Task";
 
 export function Tasks() {
-  const lists = useLists();
+  const { lists } = useLists();
   console.log("Lists: ", lists);
   const { listId } = useParams() as { listId: string };
 

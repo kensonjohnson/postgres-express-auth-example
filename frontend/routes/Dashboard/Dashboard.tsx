@@ -38,5 +38,5 @@ export function Dashboard() {
 
 export function useLists() {
   console.log("Inside useLists");
-  return useOutletContext<List[]>();
+  return useOutletContext<{ lists: List[] }>();
 }
