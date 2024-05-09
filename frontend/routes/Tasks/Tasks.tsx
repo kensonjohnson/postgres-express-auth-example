@@ -12,10 +12,6 @@ export function Tasks() {
 
   const list = lists.find((list) => list.id === parseInt(listId)) as List;
 
-  if (!list) {
-    return <h2>List not found</h2>;
-  }
-
   if (!list.tasks.length) {
     return (
       <div className={styles.container}>
