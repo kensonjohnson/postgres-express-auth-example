@@ -1,4 +1,3 @@
-// @ts-expect-error
 import MagicLink from "passport-magic-link";
 import { pool } from "../../db/db.js";
 import { transporter } from "../nodemailer/transporter.js";
