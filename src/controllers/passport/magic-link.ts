@@ -32,6 +32,7 @@ function sendEmailToUser(user: Express.User, token: string) {
 }
 
 function verifyUser(user: Express.User) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
       // Check for the user's email in the database

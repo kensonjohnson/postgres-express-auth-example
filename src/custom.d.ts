@@ -6,10 +6,14 @@ declare namespace Express {
 }
 
 declare module "passport-magic-link" {
+  import type { SentMessageInfo } from "nodemailer";
   import { Strategy } from "passport";
   import { User } from "express";
 
-  export type SendEmailToUser = (user: User, token: string) => Promise<any>;
+  export type SendEmailToUser = (
+    user: User,
+    token: string
+  ) => Promise<SentMessageInfo>;
   export type VerifyUser = (user: User) => Promise<User>;
 
   export interface MagicLinkStrategyOptions {
@@ -25,11 +29,5 @@ declare module "passport-magic-link" {
       sendEmailToUser: SendEmailToUser,
       verifyUser: VerifyUser
     );
-  }
-}
-
-declare namespace passport {
-  export interface MagicLink {
-    Strategy: typeof Strategy;
   }
 }
