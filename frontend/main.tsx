@@ -48,8 +48,13 @@ const router = createBrowserRouter([
           { path: "add/list", action: addListAction },
           { path: "add/task", action: addTaskAction },
           { path: "update/task/completed", action: completeAction },
-          { path: "delete/list/:id", action: deleteListAction },
-          { path: "delete/task", action: deleteTaskAction },
+          {
+            path: "delete",
+            children: [
+              { path: "list/:id", action: deleteListAction },
+              { path: "task", action: deleteTaskAction },
+            ],
+          },
         ],
       },
     ],
