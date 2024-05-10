@@ -1,4 +1,5 @@
-import { ActionFunctionArgs, redirect } from "react-router-dom";
+import { ActionFunctionArgs, Form, redirect } from "react-router-dom";
+import styles from "./Login.module.css";
 
 export async function action({ request }: ActionFunctionArgs) {
   const email = (await request.formData()).get("email") as string;
@@ -14,4 +15,16 @@ export async function action({ request }: ActionFunctionArgs) {
     return redirect("/login/check-email");
   }
   throw new Error("There was an error logging in.");
+}
+
+export function Login() {
+  return (
+    <Form action="/login/email" method="post" className={styles.form}>
+      <label htmlFor="email">Email:</label>
+      <input type="email" name="email" />
+      <button type="submit" className="button">
+        Login
+      </button>
+    </Form>
+  );
 }

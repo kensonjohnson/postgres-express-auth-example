@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { Form, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import styles from "./Index.module.css";
+import { Login } from "./Login";
 
 export function Index() {
   const { user } = useRouteLoaderData("root") as { user?: User };
@@ -20,13 +21,7 @@ export function Index() {
         in using the form below! If you don't have an account, one will be made
         for you when you click the link sent to your email address.
       </p>
-      <Form action="/login/email" method="post" className={styles.form}>
-        <label htmlFor="email">Email:</label>
-        <input type="email" name="email" />
-        <button type="submit" className="button">
-          Login
-        </button>
-      </Form>
+      <Login />
     </main>
   );
 }
