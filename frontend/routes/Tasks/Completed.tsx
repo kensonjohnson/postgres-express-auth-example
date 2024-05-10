@@ -29,7 +29,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export function Completed({ task }: { task: Task }) {
-  let completed = task.completed;
+  const completed = task.completed;
   const submit = useSubmit();
 
   return (

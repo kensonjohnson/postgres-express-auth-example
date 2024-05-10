@@ -7,7 +7,7 @@ const router = Router();
 router.post(
   "/email",
   passport.authenticate("magiclink", {
-    // @ts-expect-error
+    // @ts-expect-error: Added by passport-magic-link, which doesn't provide TypeScript types
     action: "requestToken",
     failureRedirect: "/",
   }),
