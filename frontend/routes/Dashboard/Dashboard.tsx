@@ -3,10 +3,12 @@ import {
   redirect,
   Outlet,
   useOutletContext,
+  useNavigate,
 } from "react-router-dom";
 import { authProvider } from "../../providers/auth-provider";
 import { Lists } from "../Lists/Lists";
 import styles from "./Dashboard.module.css";
+import { useEffect } from "react";
 
 export async function loader() {
   if (!authProvider.isAuthenticated) {
@@ -23,6 +25,13 @@ export async function loader() {
 export function Dashboard() {
   const { lists } = useLoaderData() as { lists: List[] };
   const user = authProvider.user!;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (lists && lists.length > 0) {
+      navigate(`/dashboard/${lists[0].id}`);
+    }
+  }, []);
 
   return (
     <section className={styles.container}>
