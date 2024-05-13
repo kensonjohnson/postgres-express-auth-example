@@ -15,13 +15,13 @@ export async function action({ params }: ActionFunctionArgs) {
   if (!response.ok) {
     return new Response("Failed to delete list", { status: 500 });
   }
-  return redirect("/dashboard");
+  return redirect("/todos");
 }
 
 export function DeleteList({ list }: { list: List }) {
   return (
     <Form
-      action={`/delete/list/${list.id}`}
+      action={`/todos/delete/list/${list.id}`}
       method="post"
       className={styles.form}
     >

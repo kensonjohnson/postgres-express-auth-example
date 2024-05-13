@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
-import { Logout } from "../../routes/Logout";
+import { Logout } from "../../routes/Auth/Logout";
 
 type HeaderProps = {
   loggedIn: boolean;
@@ -30,6 +30,14 @@ export function Header({ loggedIn }: HeaderProps) {
               }`}
             >
               Dashboard
+            </Link>
+            <Link
+              to={"/todos"}
+              className={`${styles.link} ${
+                path.includes("todos") ? styles.selected : ""
+              }`}
+            >
+              Todos
             </Link>
             <Link
               to={"/account"}

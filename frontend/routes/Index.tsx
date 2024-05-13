@@ -1,5 +1,5 @@
 import styles from "./Index.module.css";
-import { Login } from "./Login";
+import { Login } from "./Auth/Login";
 import { authProvider } from "../providers/auth-provider";
 import { LoaderFunctionArgs, redirect } from "react-router-dom";
 

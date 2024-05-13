@@ -4,40 +4,43 @@ import {
   redirect,
   useNavigation,
 } from "react-router-dom";
-import styles from "./AddList.module.css";
-import { useEffect, useState } from "react";
+import styles from "./AddTask.module.css";
+import { useState, useEffect } from "react";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
+  const listId = formData.get("listId") as string;
   const title = formData.get("title") as string;
 
-  if (!title) return redirect("/dashboard");
+  if (!listId || !title) return redirect("/todos");
+
   try {
-    const response = await fetch("/list/create", {
+    const response = await fetch("/task/create", {
       method: "POST",
-      body: JSON.stringify({ title }),
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        listId,
+        title,
+      }),
     });
 
     if (!response.ok) throw new Error(response.statusText);
 
-    const { id } = await response.json();
-
-    return redirect("/dashboard/" + id);
+    return redirect(`/todos/${listId}`);
   } catch (error) {
     if (error instanceof Error) {
-      return new Response("Failed to create list.", {
+      return new Response("Failed to create task", {
         status: 500,
         statusText: error.message,
       });
     }
-    return new Response("Failed to create list.", { status: 500 });
+    return new Response("Failed to create task", { status: 500 });
   }
 }
 
-export function AddList() {
+export function AddTask({ list }: { list: List }) {
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigation = useNavigation();
@@ -52,13 +55,13 @@ export function AddList() {
   }, [navigation]);
 
   return (
-    <Form action="/add/list" method="post" className={styles.form}>
+    <Form action="/todos/add/task" method="post" className={styles.form}>
+      <input type="hidden" name="listId" value={list.id} />
       <input
         type="text"
         name="title"
         value={name}
         onChange={(event) => setName(event.target.value)}
-        placeholder="New list name"
       />
       <button type="submit" disabled={submitting}>
         Add

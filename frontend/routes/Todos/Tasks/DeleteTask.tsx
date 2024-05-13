@@ -18,12 +18,12 @@ export async function action({ request }: ActionFunctionArgs) {
     return new Response("Failed to delete task", { status: 500 });
   }
 
-  return redirect(`/dashboard/${listId}`);
+  return redirect(`/todos/${listId}`);
 }
 
 export function DeleteTask({ task }: { task: Task }) {
   return (
-    <Form action="/delete/task" method="post" className={styles.form}>
+    <Form action="/todos/delete/task" method="post" className={styles.form}>
       <input type="hidden" name="id" value={task.id} />
       <input type="hidden" name="listId" value={task.list_id} />
       <button className={styles["delete-button"]} type="submit">

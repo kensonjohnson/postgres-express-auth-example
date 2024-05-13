@@ -21,10 +21,10 @@ export async function action({ request }: ActionFunctionArgs) {
       throw new Error("Failed to update task");
     }
     const task = (await response.json()) as Task;
-    return redirect(`/dashboard/${task.list_id}`);
+    return redirect(`/todos/${task.list_id}`);
   } catch (error) {
     console.error(error);
-    return redirect(`/dashboard`);
+    return redirect(`/todos`);
   }
 }
 
@@ -34,7 +34,7 @@ export function Completed({ task }: { task: Task }) {
 
   return (
     <Form
-      action="/update/task/completed"
+      action="/todos/update/task/completed"
       method="post"
       onChange={(event) => {
         submit(event.currentTarget, { method: "post" });
