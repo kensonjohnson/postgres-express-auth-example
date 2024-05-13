@@ -23,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(path + (query ? `?q=${query}` : ""));
   }
 
-  await authProvider.authenticate();
+  await authProvider.ready;
   return {
     user: authProvider.user,
     loggedIn: authProvider.isAuthenticated,
