@@ -1,18 +1,18 @@
-import { useEffect } from "react";
-import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import styles from "./Index.module.css";
 import { Login } from "./Login";
+import { authProvider } from "../providers/auth-provider";
+import { LoaderFunctionArgs, redirect } from "react-router-dom";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  await authProvider.ready;
+  if (authProvider.isAuthenticated && url.pathname === "/") {
+    return redirect("/dashboard");
+  }
+  return null;
+}
 
 export function Index() {
-  const { user } = useRouteLoaderData("root") as { user?: User };
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
-
   return (
     <main>
       <p className={styles.content}>

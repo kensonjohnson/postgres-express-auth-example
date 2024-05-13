@@ -6,8 +6,18 @@ import { v4 as uuidV4 } from "uuid";
 import { Task } from "./Task";
 
 export function Tasks() {
-  const { lists } = useLists();
   const { listId } = useParams() as { listId: string };
+  const { lists } = useLists();
+
+  if (listId === "0") {
+    return (
+      <div className={styles.container}>
+        <h2>Tasks</h2>
+        <p>Create a list to get started!</p>
+      </div>
+    );
+  }
+
   const list = lists.find((list) => list.id == parseInt(listId)) as List;
 
   if (!list?.tasks || list.tasks.length === 0) {

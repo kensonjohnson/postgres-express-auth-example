@@ -40,3 +40,10 @@
   border: 1px solid lightblue;
   box-shadow: 0 0 5px lightblue;
 }
+
+.form button:disabled {
+  color: gray;
+  text-shadow: none;
+  border: 1px solid gray;
+  box-shadow: none;
+}
