@@ -9,7 +9,7 @@ export function List({ list }: { list: List }) {
   return (
     <li className={styles.li}>
       <Link
-        to={`/dashboard/${list.id}`}
+        to={`/todos/${list.id}`}
         className={`${styles.link} ${selected ? styles.selected : ""}`}
       >
         {list.title}

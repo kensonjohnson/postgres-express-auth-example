@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useLists } from "../Dashboard/Dashboard";
+import { useLists } from "../Todos";
 import styles from "./Tasks.module.css";
 import { AddTask } from "./AddTask";
 import { v4 as uuidV4 } from "uuid";

@@ -1,5 +1,5 @@
 import { Form, redirect } from "react-router-dom";
-import { authProvider } from "../providers/auth-provider";
+import { authProvider } from "../../providers/auth-provider";
 
 export async function action() {
   await authProvider.logout();
