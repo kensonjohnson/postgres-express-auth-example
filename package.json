@@ -11,7 +11,8 @@
     "build:frontend": "tsc -p frontend/tsconfig.json && vite build",
     "build:backend": "tsc",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 && tsc --noEmit",
-    "start": "node build/server.js"
+    "start": "node build/server.js",
+    "seed": "node infra/setup_database.js"
   },
   "dependencies": {
     "@types/uuid": "^9.0.8",

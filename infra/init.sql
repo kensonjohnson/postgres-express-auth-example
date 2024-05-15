@@ -61,13 +61,13 @@ $$
 LANGUAGE 'plpgsql';
 
 -- Create a trigger to update the last_updated column when a list is updated
-CREATE TRIGGER refresh_list_updated_at
+CREATE OR REPLACE TRIGGER refresh_list_updated_at
     BEFORE UPDATE ON LIST
     FOR EACH ROW
     EXECUTE FUNCTION update_last_updated_column();
 
 -- Create a trigger to update the last_updated column when a task is updated
-CREATE TRIGGER refresh_task_updated_at
+CREATE OR REPLACE TRIGGER refresh_task_updated_at
     BEFORE UPDATE ON task
     FOR EACH ROW
     EXECUTE FUNCTION update_last_updated_column();
