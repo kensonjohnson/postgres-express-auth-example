@@ -26,3 +26,5 @@ export const DB_CONFIG = {
 };
 
 export const COOKIE_SECRET = process.env.COOKIE_SECRET!;
+
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
