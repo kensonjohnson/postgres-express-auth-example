@@ -13,8 +13,10 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   --color: rgba(255, 255, 255, 0.87);
+  --secondary-color: #646cff;
   background-color: #242424;
   --background-color: #242424;
+  --secondary-background-color: #1a1a1a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -60,13 +62,13 @@ a {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--secondary-background-color);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 
 .button:hover {
-  border-color: #646cff;
+  border-color: var(--secondary-color);
 }
 
 .button:focus,
@@ -78,14 +80,9 @@ a {
   :root {
     color: #213547;
     --color: #213547;
+    --secondary-color: #747bff;
     background-color: #ffffff;
     --background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-
-  .button {
-    background-color: #f9f9f9;
+    --secondary-background-color: #f9f9f9;
   }
 }
