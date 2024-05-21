@@ -33,7 +33,7 @@ export function ResponseForm({ chat, setChat }: ResponseFormProps) {
         setValue={setValue}
         className={styles.textarea}
       />
-      <button className="button" type="submit">
+      <button className={styles.button} type="submit">
         Send
       </button>
     </form>
