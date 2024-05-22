@@ -11,13 +11,22 @@ export type ChatObject = {
 
 export function ChatWindow() {
   const [chat, setChat] = useState<ChatObject[]>([]);
-
+  const [partialResponse, setPartialResponse] = useState<string>("");
   return (
     <div className={styles.container}>
       {chat.map((item) => (
         <ChatItem key={uuidv4()} role={item.role} message={item.message} />
       ))}
-      <ResponseForm chat={chat} setChat={setChat} />
+      {partialResponse && (
+        <ChatItem key={uuidv4()} role="bot" message={partialResponse} />
+      )}
+      {!partialResponse && (
+        <ResponseForm
+          chat={chat}
+          setChat={setChat}
+          setPartialResponse={setPartialResponse}
+        />
+      )}
     </div>
   );
 }
