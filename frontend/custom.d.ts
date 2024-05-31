@@ -22,3 +22,13 @@ declare type Task = {
   last_updated: Date;
   completed: boolean;
 };
+
+declare type Conversation = {
+  id: number;
+  title: string;
+};
+
+type ChatObject = {
+  role: "user" | "system";
+  content: string;
+};
