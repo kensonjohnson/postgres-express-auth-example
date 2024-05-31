@@ -4,6 +4,7 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import ErrorPage from "../../error-page";
 
@@ -12,6 +13,7 @@ import { Sidebar } from "./Sidebar";
 import { ChatWindow, loader as chatWindowLoader } from "./ChatWindow";
 import { action as newChatAction } from "./NewChat";
 import { action as editTitleAction } from "./EditTitle";
+import { action as deleteAction } from "./DeleteChat";
 import { authProvider } from "../../providers/auth-provider";
 import { useEffect } from "react";
 
@@ -38,6 +40,7 @@ export const chatRoutes: RouteObject[] = [
     children: [
       { path: ":chatId", element: <ChatWindow />, loader: chatWindowLoader },
       { path: "edit-title", action: editTitleAction },
+      { path: "delete", action: deleteAction },
     ],
   },
 ];
@@ -45,8 +48,13 @@ export const chatRoutes: RouteObject[] = [
 function Chat() {
   const conversations = useLoaderData() as Conversation[];
   const navigate = useNavigate();
+  const params = useParams();
 
   useEffect(() => {
+    const { chatId } = params as { chatId: string };
+    if (chatId) {
+      return;
+    }
     if (conversations && conversations.length > 0) {
       navigate(`/chat/${conversations[0].id}`);
     } else {

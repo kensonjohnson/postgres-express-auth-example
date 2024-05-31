@@ -45,14 +45,13 @@ export function ResponseForm({ chat, setPartialResponse }: ResponseFormProps) {
       let content = "";
 
       while (true) {
-        const { value: part, done } = await reader.read();
+        const { value, done } = await reader.read();
 
         if (done) {
           break;
         }
 
-        const data = JSON.parse(part);
-        content += data.content ?? "";
+        content += value;
         setPartialResponse(content);
       }
 

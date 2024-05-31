@@ -7,7 +7,6 @@ import { LoaderFunctionArgs, useLoaderData, useParams } from "react-router-dom";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const chatId = params.chatId;
-  console.log("chatId", chatId);
   if (typeof chatId === "undefined") {
     return [];
   }
@@ -33,10 +32,11 @@ export function ChatWindow() {
   }, []);
 
   useEffect(() => {
+    console.log("useEffect");
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [partialResponse, chat]);
+  }, [partialResponse, chat, containerRef]);
 
   return (
     <div className={styles.container} ref={containerRef}>

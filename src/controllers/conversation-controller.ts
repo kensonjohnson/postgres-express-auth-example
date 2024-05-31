@@ -49,7 +49,7 @@ export async function createConversation(req: Request, res: Response) {
   }
 }
 
-export async function editTitle(req: Request, res: Response) {
+export async function editConversationTitle(req: Request, res: Response) {
   const { id, title } = req.body;
   try {
     await pool.query("UPDATE conversation SET title = $1 WHERE id = $2", [
@@ -63,8 +63,20 @@ export async function editTitle(req: Request, res: Response) {
   }
 }
 
+export async function deleteConversation(req: Request, res: Response) {
+  const { id } = req.body;
+  try {
+    await pool.query("DELETE FROM conversation WHERE id = $1", [id]);
+    res.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).end();
+  }
+}
+
 export async function handleChatSubmission(req: Request, res: Response) {
-  let { message, conversationId } = req.body;
+  const message = req.body.message;
+  let conversationId = req.body.conversationId;
   const { id } = req.user!;
 
   if (!message) {
@@ -74,14 +86,11 @@ export async function handleChatSubmission(req: Request, res: Response) {
 
   try {
     if (!conversationId || conversationId === "0") {
-      console.log("No conversation ID");
       const query = await pool.query(
         "INSERT INTO conversation (user_id, title) VALUES ($1, $2) RETURNING id",
         [id, "Untitled Conversation"]
       );
       conversationId = query.rows[0].id;
-    } else {
-      console.log("Conversation ID", conversationId);
     }
     await pool.query(
       "INSERT INTO message (conversation_id, role, content) VALUES ($1, $2, $3)",
@@ -130,11 +139,11 @@ export async function handleChatSubmission(req: Request, res: Response) {
         usage = part.usage;
         break;
       }
-      await new Promise((resolve) => setTimeout(resolve, 30));
+      // await new Promise((resolve) => setTimeout(resolve, 30));
       const content: string = part.choices[0]?.delta?.content || "";
       accumulatedContent += content;
-      const data = { finished: false, content, conversationId };
-      res.write(JSON.stringify(data));
+
+      res.write(content);
     }
 
     await pool.query(
@@ -147,14 +156,6 @@ export async function handleChatSubmission(req: Request, res: Response) {
         usage?.prompt_tokens ?? 0,
         usage?.completion_tokens ?? 0,
       ]
-    );
-
-    res.write(
-      JSON.stringify({
-        finished: true,
-        content: accumulatedContent,
-        conversationId,
-      })
     );
 
     res.end();
