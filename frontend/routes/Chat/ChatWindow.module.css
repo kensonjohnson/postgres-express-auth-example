@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+  height: 100%;
+  min-width: 320px;
+  border-bottom: 1px solid var(--color);
+  overflow: scroll;
+}

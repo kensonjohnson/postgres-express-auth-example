@@ -1,0 +1,9 @@
+.li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  width: 100%;
+  font-kerning: 1.2em;
+}

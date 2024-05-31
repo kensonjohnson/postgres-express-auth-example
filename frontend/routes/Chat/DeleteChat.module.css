@@ -1,0 +1,21 @@
+.form {
+  margin: 0;
+  padding: 0;
+  margin-left: auto;
+  margin-right: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.delete-button {
+  background: none;
+  padding: 0;
+  margin: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  color: red;
+  text-shadow: 0 0 2px red, 0 0 5px red;
+}

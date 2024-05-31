@@ -32,6 +32,14 @@ export function Header({ loggedIn }: HeaderProps) {
               Dashboard
             </Link>
             <Link
+              to={"/chat"}
+              className={`${styles.link} ${
+                path.includes("chat") ? styles.selected : ""
+              }`}
+            >
+              Chat
+            </Link>
+            <Link
               to={"/todos"}
               className={`${styles.link} ${
                 path.includes("todos") ? styles.selected : ""

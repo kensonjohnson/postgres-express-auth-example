@@ -15,6 +15,7 @@ import {
 import { Account } from "./routes/Account.tsx";
 import { todosRoutes } from "./routes/Todos/Todos.tsx";
 import { authRoutes } from "./routes/Auth/Auth.tsx";
+import { chatRoutes } from "./routes/Chat/Chat.tsx";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
           { path: "account", element: <Account /> },
           ...todosRoutes,
           ...authRoutes,
+          ...chatRoutes,
         ],
       },
     ],

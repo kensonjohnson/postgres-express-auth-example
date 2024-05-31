@@ -16,7 +16,7 @@ Sessions are stored in a PostgreSQL database using [connect-pg-simple](https://g
 ## Requirements
 
 - Node.js
-- PostgreSQL (Official Docker image used in this project)
+- PostgreSQL ([Official Docker image](https://hub.docker.com/_/postgres) used in this project)
 
 ## Getting Started
 

@@ -1,0 +1,44 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+  border: 1px solid var(--color);
+  box-shadow: 6px 6px 0px var(--secondary-background-color);
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--color);
+  border-radius: 4px;
+  resize: none;
+}
+
+.textarea:focus {
+  outline: 1px solid var(--secondary-color);
+}
+
+.button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.4em 0.8em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--secondary-background-color);
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.button:hover {
+  border-color: var(--secondary-color);
+}
+
+.button:focus,
+.button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
