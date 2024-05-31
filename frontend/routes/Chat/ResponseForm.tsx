@@ -1,20 +1,16 @@
 import { useState } from "react";
 import { DynamicHeightTextArea } from "./DynamicHeightTextArea";
 import styles from "./ResponseForm.module.css";
-import type { ChatObject } from "./ChatWindow";
+import { useParams } from "react-router-dom";
 
 type ResponseFormProps = {
   chat: ChatObject[];
-  setChat: React.Dispatch<React.SetStateAction<ChatObject[]>>;
   setPartialResponse: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export function ResponseForm({
-  chat,
-  setChat,
-  setPartialResponse,
-}: ResponseFormProps) {
+export function ResponseForm({ chat, setPartialResponse }: ResponseFormProps) {
   const [value, setValue] = useState("");
+  const { chatId } = useParams() as { chatId: string };
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -24,36 +20,12 @@ export function ResponseForm({
     }
 
     try {
-      // const response = await fetch("/conversation", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ message: value }),
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error("Failed to send message");
-      // }
-
-      // const newChat: ChatObject[] = [...chat];
-      // newChat.push({ role: "user", message: value });
-
-      // setChat(newChat);
-
-      // // TODO: convert to event source
-      // const { message } = await response.json();
-
-      // setChat([...newChat, { role: "bot", message }]);
-
-      // setValue("");
-
-      const eventSource = await fetch("/conversation", {
+      const eventSource = await fetch("/conversation/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: value }),
+        body: JSON.stringify({ message: value, conversationId: chatId ?? "" }),
       });
 
       if (!eventSource.ok) {
@@ -68,10 +40,9 @@ export function ResponseForm({
         throw new Error("Failed to create reader");
       }
 
-      const newChat: ChatObject[] = [...chat, { role: "user", message: value }];
-      setChat(newChat);
+      chat.push({ role: "user", content: value });
 
-      let message = "";
+      let content = "";
 
       while (true) {
         const { value: part, done } = await reader.read();
@@ -80,11 +51,12 @@ export function ResponseForm({
           break;
         }
 
-        message += part ?? "";
-        setPartialResponse(message);
+        const data = JSON.parse(part);
+        content += data.content ?? "";
+        setPartialResponse(content);
       }
 
-      setChat([...newChat, { role: "bot", message }]);
+      chat.push({ role: "system", content });
       setPartialResponse("");
       setValue("");
     } catch (error) {

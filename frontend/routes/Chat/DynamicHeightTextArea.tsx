@@ -4,6 +4,7 @@ type DynamicHeightTextAreaProps = {
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   className?: string;
+  name?: string;
 };
 
 // Updates the height of a <textarea> when the value changes.
@@ -11,6 +12,7 @@ export function DynamicHeightTextArea({
   value,
   setValue,
   className,
+  name,
 }: DynamicHeightTextAreaProps) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -32,6 +34,7 @@ export function DynamicHeightTextArea({
       ref={textAreaRef}
       rows={1}
       value={value}
+      name={name ?? ""}
       onChange={(e) => setValue(e.target.value)}
     />
   );

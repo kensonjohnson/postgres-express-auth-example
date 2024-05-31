@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.output {
+  text-align: start;
+}
+
+.output.code {
+  white-space: pre;
+}
