@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
 import styles from "./Sidebar.module.css";
 import { NewChat } from "./NewChat";
+import { ConversationTitle } from "./ConversationTitle";
 
 type SidebarProps = {
   conversations: Conversation[];
@@ -15,9 +15,10 @@ export function Sidebar({ conversations }: SidebarProps) {
       </div>
       <ul className={styles.ul}>
         {conversations.map((conversation) => (
-          <li key={conversation.id}>
-            <Link to={`/chat/${conversation.id}`}>{conversation.title}</Link>
-          </li>
+          <ConversationTitle
+            key={conversation.id}
+            conversation={conversation}
+          />
         ))}
       </ul>
     </aside>

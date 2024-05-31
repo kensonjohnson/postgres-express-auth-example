@@ -49,6 +49,20 @@ export async function createConversation(req: Request, res: Response) {
   }
 }
 
+export async function editTitle(req: Request, res: Response) {
+  const { id, title } = req.body;
+  try {
+    await pool.query("UPDATE conversation SET title = $1 WHERE id = $2", [
+      title,
+      id,
+    ]);
+    res.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).end();
+  }
+}
+
 export async function handleChatSubmission(req: Request, res: Response) {
   let { message, conversationId } = req.body;
   const { id } = req.user!;

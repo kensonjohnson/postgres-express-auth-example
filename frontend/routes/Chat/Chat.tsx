@@ -11,6 +11,7 @@ import styles from "./Chat.module.css";
 import { Sidebar } from "./Sidebar";
 import { ChatWindow, loader as chatWindowLoader } from "./ChatWindow";
 import { action as newChatAction } from "./NewChat";
+import { action as editTitleAction } from "./EditTitle";
 import { authProvider } from "../../providers/auth-provider";
 import { useEffect } from "react";
 
@@ -36,6 +37,7 @@ export const chatRoutes: RouteObject[] = [
     action: newChatAction,
     children: [
       { path: ":chatId", element: <ChatWindow />, loader: chatWindowLoader },
+      { path: "edit-title", action: editTitleAction },
     ],
   },
 ];

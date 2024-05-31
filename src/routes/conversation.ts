@@ -3,6 +3,7 @@ import {
   getChat,
   getConversations,
   createConversation,
+  editTitle,
   handleChatSubmission,
 } from "../controllers/conversation-controller.js";
 
@@ -13,6 +14,8 @@ router.get("/chat/:id", getChat);
 router.get("/list", getConversations);
 
 router.post("/new", createConversation);
+
+router.put("/edit", editTitle);
 
 router.post("/submit", handleChatSubmission);
 
