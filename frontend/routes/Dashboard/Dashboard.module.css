@@ -10,7 +10,6 @@
 
 .dashboard-bar {
   display: flex;
-  grid-area: header;
   padding-left: 1rem;
   justify-content: center;
   border-bottom: solid 1px var(--color);
