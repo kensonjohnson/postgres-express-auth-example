@@ -1,11 +1,11 @@
 export class AuthProvider {
   isAuthenticated: boolean;
-  user: User | null;
+  #user: User | null;
   #authenticating: boolean;
 
   constructor() {
     this.isAuthenticated = false;
-    this.user = null;
+    this.#user = null;
     this.#authenticating = true;
     this.authenticate();
   }
@@ -17,9 +17,9 @@ export class AuthProvider {
       if (!response.ok)
         throw new Error("There was an error fetching the user.");
       this.isAuthenticated = true;
-      this.user = await response.json();
+      this.#user = await response.json();
     } catch (error) {
-      this.user = null;
+      this.#user = null;
       this.isAuthenticated = false;
     } finally {
       this.#authenticating = false;
@@ -37,10 +37,14 @@ export class AuthProvider {
     });
   }
 
+  get user() {
+    return this.#user;
+  }
+
   async logout() {
     await fetch("/auth/logout", { method: "POST" });
     this.isAuthenticated = false;
-    this.user = null;
+    this.#user = null;
   }
 }
 
