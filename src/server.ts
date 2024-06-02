@@ -20,6 +20,7 @@ import userController from "./routes/user.js";
 import listRouter from "./routes/list.js";
 import taskRouter from "./routes/task.js";
 import conversationRouter from "./routes/conversation.js";
+import billingRouter from "./routes/billing.js";
 import { ensureAuthenticated } from "./controllers/auth-controller.js";
 import { catchUnmatchedRequestAndRedirectEncoded } from "./controllers/root-controller.js";
 
@@ -29,6 +30,7 @@ app.use("/user", ensureAuthenticated, userController);
 app.use("/list", ensureAuthenticated, listRouter);
 app.use("/task", ensureAuthenticated, taskRouter);
 app.use("/conversation", ensureAuthenticated, conversationRouter);
+app.use("/billing", ensureAuthenticated, billingRouter);
 app.all("*", catchUnmatchedRequestAndRedirectEncoded);
 
 // Start server
