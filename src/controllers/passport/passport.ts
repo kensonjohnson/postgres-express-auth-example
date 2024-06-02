@@ -29,11 +29,10 @@ export function configurePassport(app: Express) {
 
   // Serialize and Deserialize
   passport.serializeUser((user, cb) => {
+    // The user recieved here is the entire row from the 'users' table in
+    // the database, so this will match the structure defined in 'init.sql'.
     process.nextTick(() => {
-      cb(null, {
-        id: user.id,
-        email: user.email,
-      });
+      cb(null, user);
     });
   });
 
