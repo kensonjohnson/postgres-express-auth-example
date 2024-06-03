@@ -46,15 +46,13 @@ async function loader() {
     return redirect("/");
   }
   const response = await fetch("/list");
-  if (!response.ok) return { list: [] };
+  if (!response.ok) return [];
 
-  const lists = await response.json();
-
-  return { lists };
+  return await response.json();
 }
 
 function Todos() {
-  const { lists } = useLoaderData() as { lists: List[] };
+  const lists = useLoaderData() as List[];
   const navigate = useNavigate();
 
   useEffect(() => {
