@@ -52,6 +52,11 @@ export function EditTitle({ conversation, setEditing }: EditTitleProps) {
         name="title"
         defaultValue={conversation.title}
         onBlur={handleSubmit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.currentTarget.blur();
+          }
+        }}
       />
     </Form>
   );
