@@ -26,6 +26,7 @@ async function action() {
 
 // We need a loader to revalidate the user data after adding credits
 async function loader() {
+  authProvider.refreshUser();
   await authProvider.ready;
   if (!authProvider.isAuthenticated) {
     return redirect("/");
