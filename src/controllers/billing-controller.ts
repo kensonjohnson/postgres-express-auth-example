@@ -13,7 +13,11 @@ export async function getBalance(req: Request, res: Response) {
     // Update the user's credit balance in the session
     const updatedUser = req.user!;
     updatedUser.credit_balance = query.rows[0].balance;
-    req.logIn(updatedUser, (err) => console.error(err));
+    req.logIn(updatedUser, (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
     res.json(query.rows[0]);
   } catch (error) {
     console.error(error);
@@ -26,13 +30,6 @@ export async function addCredits(req: Request, res: Response) {
     await pool.query("INSERT INTO credit (user_id, amount) VALUES ($1, 10)", [
       userId,
     ]);
-
-    // Update the user's credit balance in the session.
-    // Right now, only 10 credits are added at a time,
-    // so we can just add 10 to the current balance.
-    const updatedUser = req.user!;
-    updatedUser.credit_balance += 10;
-    req.logIn(updatedUser, (err) => console.error(err));
 
     res.json({ message: "Credit successful", amount: 10 });
   } catch (error) {
