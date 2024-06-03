@@ -74,7 +74,7 @@ export async function updateList(req: Request, res: Response) {
     const { title, description } = req.body;
     const query = await pool.query(
       "UPDATE list SET title = $1, description = $2 WHERE id = $3 AND user_id = $4 RETURNING *",
-      [title, description, id, userId]
+      [title ?? "Untitled List", description ?? "", id, userId]
     );
 
     if (!query) throw new Error("Failed to update list.");

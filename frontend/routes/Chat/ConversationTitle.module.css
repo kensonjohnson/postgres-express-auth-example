@@ -7,3 +7,14 @@
   width: 100%;
   font-kerning: 1.2em;
 }
+
+.link {
+  text-decoration: none;
+  color: var(--color);
+  font-size: 1.2em;
+}
+
+.link.selected {
+  color: lightblue;
+  text-shadow: 0 0 2px lightblue, 0 0 3px lightblue;
+}

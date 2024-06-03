@@ -25,9 +25,12 @@
 .ul {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   align-items: start;
-  list-style: none;
   padding: 0;
-  padding-left: 1rem;
   margin: 0;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+  height: 100%;
+  width: 100%;
 }
