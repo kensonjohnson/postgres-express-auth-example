@@ -1,10 +1,4 @@
-import {
-  Form,
-  RouteObject,
-  redirect,
-  useLoaderData,
-  useRouteLoaderData,
-} from "react-router-dom";
+import { Form, RouteObject, redirect, useLoaderData } from "react-router-dom";
 import { authProvider } from "../../providers/auth-provider";
 import styles from "./Account.module.css";
 
