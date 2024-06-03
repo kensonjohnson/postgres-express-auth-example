@@ -22,17 +22,17 @@ WHERE
 SELECT
     (
         SELECT
-            sum(amount)
+            COALESCE(SUM(amount), 0)
         FROM
             credit
         WHERE
             user_id = 1
-            AND created_on > NOW() - INTERVAL '60' day) -(
+            AND created_on > NOW() - INTERVAL '10 minute') -(
         SELECT
-            sum(amount)
+            COALESCE(SUM(amount), 0)
         FROM
             debit
         WHERE
             user_id = 1
-            AND created_on > NOW() - INTERVAL '60' day) AS balance;
+            AND created_on > NOW() - INTERVAL '10 minute') AS balance;
 
