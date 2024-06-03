@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DynamicHeightTextArea } from "./DynamicHeightTextArea";
 import styles from "./ResponseForm.module.css";
 import { useParams } from "react-router-dom";
+import { authProvider } from "../../providers/auth-provider";
 
 type ResponseFormProps = {
   chat: ChatObject[];
@@ -58,6 +59,7 @@ export function ResponseForm({ chat, setPartialResponse }: ResponseFormProps) {
       chat.push({ role: "system", content });
       setPartialResponse("");
       setValue("");
+      authProvider.user!.credit_balance--;
     } catch (error) {
       console.error(error);
     }
