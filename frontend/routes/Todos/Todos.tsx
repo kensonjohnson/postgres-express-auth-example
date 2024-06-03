@@ -5,6 +5,7 @@ import {
   useLoaderData,
   useNavigate,
   useOutletContext,
+  useParams,
 } from "react-router-dom";
 import { authProvider } from "../../providers/auth-provider";
 import { useEffect } from "react";
@@ -16,6 +17,7 @@ import { action as addTaskAction } from "./Tasks/AddTask";
 import { action as completeAction } from "./Tasks/Completed";
 import { action as deleteListAction } from "./Lists/DeleteList";
 import { action as deleteTaskAction } from "./Tasks/DeleteTask";
+import { action as editTitleAction } from "./Lists/EditTitle";
 import ErrorPage from "../../error-page";
 
 export const todosRoutes: RouteObject[] = [
@@ -29,6 +31,7 @@ export const todosRoutes: RouteObject[] = [
       { path: "add/list", action: addListAction },
       { path: "add/task", action: addTaskAction },
       { path: "update/task/completed", action: completeAction },
+      { path: "edit-title", action: editTitleAction },
       {
         path: "delete",
         children: [
@@ -54,8 +57,13 @@ async function loader() {
 function Todos() {
   const lists = useLoaderData() as List[];
   const navigate = useNavigate();
+  const params = useParams();
 
   useEffect(() => {
+    const { listId } = params as { listId: string };
+    if (listId) {
+      return;
+    }
     if (lists && lists.length > 0) {
       navigate(`/todos/${lists[0].id}`);
     } else {
