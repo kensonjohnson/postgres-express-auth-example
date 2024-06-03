@@ -136,22 +136,46 @@ BEGIN
             SELECT
 (
                     SELECT
-                        SUM(amount)
+                        COALESCE(SUM(amount), 0)
                     FROM
                         credit
                     WHERE
                         user_id = NEW.user_id
-                        AND created_on > NOW() - INTERVAL '60' day) -(
+                        AND created_on > NOW() - INTERVAL '10' minute) -(
                         SELECT
-                            SUM(amount)
+                            COALESCE(SUM(amount), 0)
                         FROM
                             debit
                         WHERE
                             user_id = NEW.user_id
-                            AND created_on > NOW() - INTERVAL '60' day))
+                            AND created_on > NOW() - INTERVAL '10' minute))
             WHERE
                 id = NEW.user_id;
     RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+--Create a function to fetch the credit balance
+CREATE OR REPLACE FUNCTION get_credit_balance(userid bigint)
+    RETURNS integer
+    AS $$
+BEGIN
+    RETURN(
+        SELECT
+            COALESCE(SUM(amount), 0)
+        FROM
+            credit
+        WHERE
+            user_id = userid
+            AND created_on > NOW() - INTERVAL '10' minute) -(
+        SELECT
+            COALESCE(SUM(amount), 0)
+        FROM
+            debit
+        WHERE
+            user_id = userid
+            AND created_on > NOW() - INTERVAL '10' minute);
 END;
 $$
 LANGUAGE 'plpgsql';
