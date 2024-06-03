@@ -1,4 +1,10 @@
-import { Form, RouteObject, redirect, useLoaderData } from "react-router-dom";
+import {
+  Form,
+  RouteObject,
+  redirect,
+  useLoaderData,
+  useRouteLoaderData,
+} from "react-router-dom";
 import { authProvider } from "../../providers/auth-provider";
 import styles from "./Account.module.css";
 
@@ -20,21 +26,26 @@ async function action() {
     throw new Error("There was an error adding credits to your account.");
   }
 
-  await authProvider.authenticate();
+  await authProvider.refreshUser();
   return redirect("/account");
 }
 
 // We need a loader to revalidate the user data after adding credits
 async function loader() {
   await authProvider.ready;
+  if (!authProvider.isAuthenticated) {
+    return redirect("/");
+  }
   return authProvider.user;
 }
 
 export function Account() {
   const user = useLoaderData() as User | null;
+
   if (!user) {
     return <div>Loading...</div>;
   }
+
   return (
     <div className={styles.container}>
       <aside className={styles.sidebar}>
@@ -48,7 +59,7 @@ export function Account() {
           )}
           <li>Email: {user.email}</li>
           <li>Email Verified: {user.email_verified ? "Yes" : "No"}</li>
-          <li>Credit Balance: {user.credit_balance}</li>
+          <li>Credit Balance: {user.credit_balance ?? 0}</li>
         </ul>
       </aside>
       <main className={styles.main}>
@@ -59,6 +70,7 @@ export function Account() {
             <button type="submit">Add Credits</button>
           </Form>
         </div>
+        <p>Credits last for 10 minutes</p>
       </main>
     </div>
   );
