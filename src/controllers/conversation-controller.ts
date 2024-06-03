@@ -85,10 +85,9 @@ export async function handleChatSubmission(req: Request, res: Response) {
   }
 
   try {
-    const userQuery = await pool.query(
-      "SELECT credit_balance FROM users WHERE id = $1",
-      [userId]
-    );
+    const userQuery = await pool.query("SELECT get_credit_balance($1)", [
+      userId,
+    ]);
 
     const creditBalance = userQuery.rows[0].credit_balance;
 
