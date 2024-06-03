@@ -1,6 +1,11 @@
 declare type User = {
   id: number;
+  first_name: string | null;
+  last_name: string | null;
   email: string;
+  email_verified: boolean;
+  initial_setup_complete: boolean;
+  credit_balance: number;
 };
 
 declare type List = {

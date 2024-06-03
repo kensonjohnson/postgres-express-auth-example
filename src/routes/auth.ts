@@ -1,8 +1,14 @@
 import { Router } from "express";
 import passport from "passport";
-import { logoutUser } from "../controllers/auth-controller.js";
+import {
+  parseUserToken,
+  ensureAuthenticated,
+  logoutUser,
+} from "../controllers/auth-controller.js";
 
 const router = Router();
+
+router.get("/check", ensureAuthenticated, parseUserToken);
 
 router.post(
   "/email",

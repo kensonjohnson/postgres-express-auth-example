@@ -4,6 +4,7 @@ import { ResponseForm } from "./ResponseForm";
 import { v4 as uuidv4 } from "uuid";
 import { ChatItem } from "./ChatItem";
 import { LoaderFunctionArgs, useLoaderData, useParams } from "react-router-dom";
+import { authProvider } from "../../providers/auth-provider";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const chatId = params.chatId;
@@ -32,7 +33,6 @@ export function ChatWindow() {
   }, []);
 
   useEffect(() => {
-    console.log("useEffect");
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
@@ -46,11 +46,14 @@ export function ChatWindow() {
       {partialResponse && (
         <ChatItem key={uuidv4()} role="system" content={partialResponse} />
       )}
-      {!partialResponse && (
+      {!partialResponse && authProvider.user!.credit_balance > 0 && (
         <ResponseForm
           chat={chatHistory}
           setPartialResponse={setPartialResponse}
         />
+      )}
+      {authProvider.user!.credit_balance <= 0 && (
+        <p style={{ color: "red" }}>You have run out of credits!</p>
       )}
     </div>
   );

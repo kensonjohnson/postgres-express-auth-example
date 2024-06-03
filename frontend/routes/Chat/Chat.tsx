@@ -17,19 +17,6 @@ import { action as deleteAction } from "./DeleteChat";
 import { authProvider } from "../../providers/auth-provider";
 import { useEffect } from "react";
 
-async function loader() {
-  await authProvider.ready;
-  if (!authProvider.isAuthenticated) {
-    return redirect("/");
-  }
-
-  const response = await fetch("/conversation/list");
-  if (response.ok) {
-    return await response.json();
-  }
-  return [];
-}
-
 export const chatRoutes: RouteObject[] = [
   {
     path: "chat",
@@ -44,6 +31,19 @@ export const chatRoutes: RouteObject[] = [
     ],
   },
 ];
+
+async function loader() {
+  await authProvider.ready;
+  if (!authProvider.isAuthenticated) {
+    return redirect("/");
+  }
+
+  const response = await fetch("/conversation/list");
+  if (response.ok) {
+    return await response.json();
+  }
+  return [];
+}
 
 function Chat() {
   const conversations = useLoaderData() as Conversation[];

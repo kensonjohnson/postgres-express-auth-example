@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
         "/list": apiProxy,
         "/task": apiProxy,
         "/conversation": apiProxy,
+        "/billing": apiProxy,
 
         // Full syntax
         // http://localhost:5173/api/foo -> http://localhost:3000/foo

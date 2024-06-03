@@ -12,7 +12,7 @@ import {
   Dashboard,
   loader as dashboardLoader,
 } from "./routes/Dashboard/Dashboard.tsx";
-import { Account } from "./routes/Account.tsx";
+import { accountRoutes } from "./routes/Account/Account.tsx";
 import { todosRoutes } from "./routes/Todos/Todos.tsx";
 import { authRoutes } from "./routes/Auth/Auth.tsx";
 import { chatRoutes } from "./routes/Chat/Chat.tsx";
@@ -34,10 +34,9 @@ const router = createBrowserRouter([
             element: <Dashboard />,
             loader: dashboardLoader,
           },
-
-          { path: "account", element: <Account /> },
-          ...todosRoutes,
           ...authRoutes,
+          ...accountRoutes,
+          ...todosRoutes,
           ...chatRoutes,
         ],
       },

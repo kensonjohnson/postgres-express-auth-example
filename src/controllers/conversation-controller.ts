@@ -77,7 +77,7 @@ export async function deleteConversation(req: Request, res: Response) {
 export async function handleChatSubmission(req: Request, res: Response) {
   const message = req.body.message;
   let conversationId = req.body.conversationId;
-  const { id } = req.user!;
+  const { id: userId } = req.user!;
 
   if (!message) {
     res.status(400).json({ error: "Invalid or empty message" });
@@ -85,10 +85,21 @@ export async function handleChatSubmission(req: Request, res: Response) {
   }
 
   try {
+    const userQuery = await pool.query("SELECT get_credit_balance($1)", [
+      userId,
+    ]);
+
+    const creditBalance = userQuery.rows[0].credit_balance;
+
+    if (creditBalance < 1) {
+      res.status(402).json({ error: "Insufficient credits" });
+      return;
+    }
+
     if (!conversationId || conversationId === "0") {
       const query = await pool.query(
         "INSERT INTO conversation (user_id, title) VALUES ($1, $2) RETURNING id",
-        [id, "Untitled Conversation"]
+        [userId, "Untitled Conversation"]
       );
       conversationId = query.rows[0].id;
     }
@@ -146,8 +157,13 @@ export async function handleChatSubmission(req: Request, res: Response) {
       res.write(content);
     }
 
+    // Save the response to the database and deduct 1 credit from the user.
     await pool.query(
-      "INSERT INTO message (conversation_id, role, content, total_token_count, prompt_token_count, response_token_count) VALUES ($1, $2, $3, $4, $5, $6)",
+      `
+      INSERT INTO message 
+      (conversation_id, role, content, total_token_count, prompt_token_count, response_token_count) 
+      VALUES ($1, $2, $3, $4, $5, $6);
+      `,
       [
         conversationId,
         "system",
@@ -157,6 +173,22 @@ export async function handleChatSubmission(req: Request, res: Response) {
         usage?.completion_tokens ?? 0,
       ]
     );
+
+    await pool.query("INSERT INTO debit (user_id, amount) VALUES ($1, 1)", [
+      userId,
+    ]);
+
+    // Update the user's credit balance in the session.
+    // This user is the one attached to the request by Passport.js,
+    // not the one we queried from the database.
+    const updatedUser = req.user!;
+    // This action costs 1 credit.
+    updatedUser.credit_balance -= creditBalance - 1;
+    req.logIn(updatedUser, (err) => {
+      if (err) {
+        console.error("Error in req.logIn: ", err);
+      }
+    });
 
     res.end();
   } catch (error) {

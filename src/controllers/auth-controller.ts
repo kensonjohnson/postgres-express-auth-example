@@ -11,6 +11,10 @@ export function ensureAuthenticated(
   res.status(401).json({ message: "Unauthorized" });
 }
 
+export async function parseUserToken(req: Request, res: Response) {
+  res.json(req.user);
+}
+
 export async function logoutUser(req: Request, res: Response) {
   req.logout((error) => {
     if (error) console.error("Error in logout", error);
