@@ -1,20 +1,35 @@
 import type { Request, Response } from "express";
 import OpenAI from "openai";
 import { OPENAI_API_KEY } from "../constants.js";
-import { pool } from "../db/db.js";
+import { db } from "../drizzle/db.js";
 import type { CompletionUsage } from "openai/resources/completions.mjs";
-// import { Stream } from "openai/streaming.mjs";
+import {
+  ConversationTable,
+  CreditTable,
+  DebitTable,
+  MessageTable,
+  UserTable,
+} from "../drizzle/schema.js";
+import { and, desc, eq, gt, sum } from "drizzle-orm";
+import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 export async function getChat(req: Request, res: Response) {
   const { id } = req.params;
+
+  if (typeof id !== "string" || isNaN(parseInt(id))) {
+    res.status(400).json({ error: "Invalid or empty conversation ID" });
+    return;
+  }
   try {
-    const query = await pool.query(
-      "SELECT role, content FROM message WHERE conversation_id = $1 ORDER BY created_on",
-      [id]
-    );
-    res.json(query.rows);
+    const conversations = await db
+      .select({ role: MessageTable.role, content: MessageTable.content })
+      .from(MessageTable)
+      .where(eq(MessageTable.conversation_id, parseInt(id)))
+      .orderBy(MessageTable.created_on);
+
+    res.json(conversations);
   } catch (error) {
     console.error(error);
     res.status(500).end();
@@ -22,15 +37,18 @@ export async function getChat(req: Request, res: Response) {
 }
 
 export async function getConversations(req: Request, res: Response) {
+  const userId = req.user!.id;
+
   try {
-    const { id } = req.user!;
-    const query = await pool.query(
-      "SELECT id, title FROM conversation WHERE user_id = $1 ORDER BY last_updated DESC",
-      [id]
-    );
-    res.json(query.rows);
+    const conversations = await db
+      .select({ id: ConversationTable.id, title: ConversationTable.title })
+      .from(ConversationTable)
+      .where(eq(ConversationTable.user_id, userId))
+      .orderBy(desc(ConversationTable.last_updated));
+
+    res.json(conversations);
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).end();
   }
 }
@@ -38,11 +56,15 @@ export async function getConversations(req: Request, res: Response) {
 export async function createConversation(req: Request, res: Response) {
   const { id } = req.user!;
   try {
-    const query = await pool.query(
-      "INSERT INTO conversation (user_id, title) VALUES ($1, $2) RETURNING id",
-      [id, "Untitled Conversation"]
-    );
-    res.json(query.rows[0]);
+    const insert = await db
+      .insert(ConversationTable)
+      .values({
+        user_id: id,
+        title: "Untitled Conversation",
+      })
+      .returning({ id: ConversationTable.id });
+
+    res.json(insert.at(0));
   } catch (error) {
     console.error(error);
     res.status(500).end();
@@ -51,12 +73,30 @@ export async function createConversation(req: Request, res: Response) {
 
 export async function editConversationTitle(req: Request, res: Response) {
   const { id, title } = req.body;
+  if (!id || !title) {
+    res
+      .status(400)
+      .json({ error: "Invalid or empty conversation ID or title" });
+    return;
+  }
+
+  if (isNaN(parseInt(id))) {
+    res.status(400).json({ error: "Invalid conversation ID" });
+    return;
+  }
+
+  if (title.length > 100) {
+    res.status(400).json({ error: "Title is too long" });
+    return;
+  }
+
   try {
-    await pool.query("UPDATE conversation SET title = $1 WHERE id = $2", [
-      title,
-      id,
-    ]);
-    res.end();
+    await db
+      .update(ConversationTable)
+      .set({ title })
+      .where(eq(ConversationTable.id, parseInt(id)));
+
+    res.end().status(204);
   } catch (error) {
     console.error(error);
     res.status(500).end();
@@ -65,9 +105,15 @@ export async function editConversationTitle(req: Request, res: Response) {
 
 export async function deleteConversation(req: Request, res: Response) {
   const { id } = req.body;
+  if (!id || isNaN(parseInt(id))) {
+    res.status(400).json({ error: "Invalid or empty conversation ID" });
+    return;
+  }
   try {
-    await pool.query("DELETE FROM conversation WHERE id = $1", [id]);
-    res.end();
+    await db
+      .delete(ConversationTable)
+      .where(eq(ConversationTable.id, parseInt(id)));
+    res.end().status(204);
   } catch (error) {
     console.error(error);
     res.status(500).end();
@@ -76,7 +122,13 @@ export async function deleteConversation(req: Request, res: Response) {
 
 export async function handleChatSubmission(req: Request, res: Response) {
   const message = req.body.message;
-  let conversationId = req.body.conversationId;
+  let conversationId: number | undefined = undefined;
+  if (
+    req.body.conversationId !== undefined &&
+    !isNaN(parseInt(req.body.conversationId))
+  ) {
+    conversationId = parseInt(req.body.conversationId);
+  }
   const { id: userId } = req.user!;
 
   if (!message) {
@@ -85,40 +137,79 @@ export async function handleChatSubmission(req: Request, res: Response) {
   }
 
   try {
-    const userQuery = await pool.query("SELECT get_credit_balance($1)", [
-      userId,
-    ]);
+    const sixtyDaysAgo = new Date();
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-    const creditBalance = userQuery.rows[0].credit_balance;
+    // Calculate the user's balance, updating it in this user's account.
+    const { balance } = await db.transaction(async (tx) => {
+      const credits = await tx
+        .select({ credit: sum(CreditTable.amount) })
+        .from(CreditTable)
+        .where(
+          and(
+            eq(CreditTable.user_id, userId),
+            gt(CreditTable.created_on, sixtyDaysAgo)
+          )
+        );
+      const debits = await tx
+        .select({ debit: sum(DebitTable.amount) })
+        .from(DebitTable)
+        .where(
+          and(
+            eq(DebitTable.user_id, userId),
+            gt(DebitTable.created_on, sixtyDaysAgo)
+          )
+        );
 
-    if (creditBalance < 1) {
+      const balance =
+        Number(credits.at(0)?.credit) - Number(debits.at(0)?.debit);
+
+      req.log.info({ balance, conversationId }, "User balance");
+
+      await tx
+        .update(UserTable)
+        .set({ credit_balance: balance })
+        .where(eq(UserTable.id, userId));
+
+      return {
+        balance,
+      };
+    });
+
+    if (balance < 1) {
       res.status(402).json({ error: "Insufficient credits" });
       return;
     }
 
-    if (!conversationId || conversationId === "0") {
-      const query = await pool.query(
-        "INSERT INTO conversation (user_id, title) VALUES ($1, $2) RETURNING id",
-        [userId, "Untitled Conversation"]
-      );
-      conversationId = query.rows[0].id;
+    // If the conversation ID is not provided, create a new conversation.
+    if (!conversationId || conversationId === 0) {
+      const newId = await db
+        .insert(ConversationTable)
+        .values({
+          user_id: userId,
+          title: "Untitled Conversation",
+        })
+        .returning({ id: ConversationTable.id });
+      req.log.info({ newId }, "new conversation id");
+      conversationId = newId.at(0)!.id;
     }
-    await pool.query(
-      "INSERT INTO message (conversation_id, role, content) VALUES ($1, $2, $3)",
-      [conversationId, "user", message]
-    );
 
-    const query = await pool.query(
-      "SELECT * FROM message WHERE conversation_id = $1 ORDER BY created_on DESC LIMIT 10",
-      [conversationId]
-    );
+    req.log.info({ conversationId }, "conversation id");
+    // Store the message in the database.
+    await db.insert(MessageTable).values({
+      conversation_id: conversationId,
+      role: "user",
+      content: message,
+    });
 
-    const messages = query.rows
-      .map((row) => ({
-        role: row.role,
-        content: row.content,
-      }))
-      .reverse();
+    const messages = (
+      await db
+        .select({ role: MessageTable.role, content: MessageTable.content })
+        .from(MessageTable)
+        .where(eq(MessageTable.conversation_id, conversationId))
+        .orderBy(desc(MessageTable.created_on))
+        .limit(10)
+    ).reverse() as ChatCompletionMessageParam[];
 
     if (messages.length < 10) {
       messages.unshift({
@@ -127,7 +218,7 @@ export async function handleChatSubmission(req: Request, res: Response) {
       });
     }
 
-    console.log("first 10 messages", messages);
+    req.log.info(messages, "first 10 messages");
 
     const stream = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -158,36 +249,18 @@ export async function handleChatSubmission(req: Request, res: Response) {
     }
 
     // Save the response to the database and deduct 1 credit from the user.
-    await pool.query(
-      `
-      INSERT INTO message 
-      (conversation_id, role, content, total_token_count, prompt_token_count, response_token_count) 
-      VALUES ($1, $2, $3, $4, $5, $6);
-      `,
-      [
-        conversationId,
-        "system",
-        accumulatedContent,
-        usage?.total_tokens ?? 0,
-        usage?.prompt_tokens ?? 0,
-        usage?.completion_tokens ?? 0,
-      ]
-    );
+    await db.insert(MessageTable).values({
+      conversation_id: conversationId,
+      role: "system",
+      content: accumulatedContent,
+      total_token_count: usage?.total_tokens ?? 0,
+      prompt_token_count: usage?.prompt_tokens ?? 0,
+      response_token_count: usage?.completion_tokens ?? 0,
+    });
 
-    await pool.query("INSERT INTO debit (user_id, amount) VALUES ($1, 1)", [
-      userId,
-    ]);
-
-    // Update the user's credit balance in the session.
-    // This user is the one attached to the request by Passport.js,
-    // not the one we queried from the database.
-    const updatedUser = req.user!;
-    // This action costs 1 credit.
-    updatedUser.credit_balance -= creditBalance - 1;
-    req.logIn(updatedUser, (err) => {
-      if (err) {
-        console.error("Error in req.logIn: ", err);
-      }
+    await db.insert(DebitTable).values({
+      user_id: userId,
+      amount: 1,
     });
 
     res.end();

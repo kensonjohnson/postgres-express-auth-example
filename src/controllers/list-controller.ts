@@ -1,30 +1,33 @@
 import type { Request, Response } from "express";
-import { pool } from "../db/db.js";
+import { db } from "../drizzle/db.js";
+import { ListTable, TaskTable } from "../drizzle/schema.js";
+import { eq } from "drizzle-orm";
 
-// TODO: Attempt to get lists and tasks in a single query
 export async function getLists(req: Request, res: Response) {
   try {
     const userId = req.user!.id;
-    const query = await pool.query("SELECT * FROM list WHERE user_id = $1", [
-      userId,
-    ]);
+    const lists = await db
+      .select()
+      .from(ListTable)
+      .where(eq(ListTable.user_id, userId));
 
-    if (!query) throw new Error("Failed to fetch lists.");
+    req.log.info({ lists }, "Fetched lists.");
 
-    const lists = query.rows;
+    if (!lists) throw new Error("Failed to fetch lists.");
 
+    // Queue the creation of adding tasks to each list
     const formattedLists = lists.map(async (list) => {
-      const tasksQuery = await pool.query(
-        "SELECT * FROM task WHERE list_id = $1",
-        [list.id]
-      );
-
-      list.tasks = tasksQuery.rows;
+      const tasks = await db
+        .select()
+        .from(TaskTable)
+        .where(eq(TaskTable.list_id, list.id));
+      return { ...list, tasks };
     });
 
-    await Promise.all(formattedLists);
+    // Wait for all lists to be formatted
+    const finishedResults = await Promise.all(formattedLists);
 
-    res.json(lists);
+    res.json(finishedResults);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch lists." });
@@ -32,17 +35,23 @@ export async function getLists(req: Request, res: Response) {
 }
 
 export async function getList(req: Request, res: Response) {
+  if (!req.params.id) {
+    return res.status(400).json({ error: "No list ID provided." });
+  }
+
+  if (isNaN(parseInt(req.params.id))) {
+    return res.status(400).json({ error: "Invalid list ID." });
+  }
+
   try {
-    const userId = req.user!.id;
-    const { id } = req.params;
-    const query = await pool.query(
-      "SELECT * FROM list WHERE id = $1 AND user_id = $2",
-      [id, userId]
-    );
+    const id = parseInt(req.params.id);
 
-    if (!query) throw new Error("Failed to fetch list.");
+    const singleList = await db
+      .select()
+      .from(ListTable)
+      .where(eq(ListTable.id, id));
 
-    res.status(200).json(query.rows[0]);
+    res.status(200).json(singleList.at(0));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch list." });
@@ -50,17 +59,28 @@ export async function getList(req: Request, res: Response) {
 }
 
 export async function createList(req: Request, res: Response) {
+  if (!req.body.title) {
+    return res.status(400).json({ error: "Title is required." });
+  }
+
+  if (req.body.title.length > 255) {
+    return res.status(400).json({ error: "Title is too long." });
+  }
+
   try {
     const userId = req.user!.id;
     const { title, description } = req.body;
-    const query = await pool.query(
-      "INSERT INTO list (title, description, user_id) VALUES ($1, $2, $3) RETURNING *",
-      [title, description, userId]
-    );
 
-    if (!query) throw new Error("Failed to create list.");
+    const insert = await db
+      .insert(ListTable)
+      .values({
+        title: title,
+        description: description,
+        user_id: userId,
+      })
+      .returning();
 
-    res.status(201).json(query.rows[0]);
+    res.status(201).json(insert.at(0));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create list." });
@@ -69,17 +89,19 @@ export async function createList(req: Request, res: Response) {
 
 export async function updateList(req: Request, res: Response) {
   try {
-    const userId = req.user!.id;
     const { id } = req.params;
     const { title, description } = req.body;
-    const query = await pool.query(
-      "UPDATE list SET title = $1, description = $2 WHERE id = $3 AND user_id = $4 RETURNING *",
-      [title ?? "Untitled List", description ?? "", id, userId]
-    );
 
-    if (!query) throw new Error("Failed to update list.");
+    const update = await db
+      .update(ListTable)
+      .set({
+        title,
+        description,
+      })
+      .where(eq(ListTable.id, parseInt(id!)))
+      .returning();
 
-    res.status(200).json(query.rows[0]);
+    res.status(200).json(update.at(0));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update list." });
@@ -89,9 +111,8 @@ export async function updateList(req: Request, res: Response) {
 export async function deleteList(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const query = await pool.query("DELETE FROM list WHERE id = $1", [id]);
 
-    if (!query) throw new Error("Failed to delete list.");
+    await db.delete(ListTable).where(eq(ListTable.id, parseInt(id!)));
 
     res.json({ message: "List deleted." });
   } catch (error) {
