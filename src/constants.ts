@@ -1,28 +1,25 @@
 import { config } from "dotenv";
 config();
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV !== "development";
 
 export const PORT = parseInt(process.env.PORT || "3000");
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost";
 
-export const WEBSITE_URL = BASE_URL + (isProduction ? "" : `:${PORT}`);
+export const WEBSITE_URL = isProduction ? BASE_URL : `http://localhost:${PORT}`;
 
-export const SMTP_CONFIG = {
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT!),
-  secure: true,
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
+export const MAILTRAP_CONFIG = {
+  endpoint: process.env.MAILTRAP_ENDPOINT!,
+  token: process.env.MAILTRAP_API_KEY!,
 };
+
+export const MAILTRAP_SENDER_EMAIL = process.env.MAILTRAP_SENDER_EMAIL!;
 
 export const SMTP_EMAIL = process.env.SMTP_EMAIL!;
 
 export const DB_CONFIG = {
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL!,
 };
 
 export const COOKIE_SECRET = process.env.COOKIE_SECRET!;

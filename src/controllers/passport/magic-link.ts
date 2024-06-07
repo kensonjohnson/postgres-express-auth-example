@@ -1,7 +1,12 @@
 import MagicLink from "passport-magic-link";
 import { pool } from "../../db/db.js";
-import { transporter } from "../nodemailer/transporter.js";
-import { COOKIE_SECRET, WEBSITE_URL, SMTP_EMAIL } from "../../constants.js";
+import { transporter } from "../mailtrap/transporter.js";
+import type { Mail } from "mailtrap";
+import {
+  COOKIE_SECRET,
+  WEBSITE_URL,
+  MAILTRAP_SENDER_EMAIL,
+} from "../../constants.js";
 
 export const MagicLinkStrategy = new MagicLink.Strategy(
   {
@@ -16,9 +21,12 @@ export const MagicLinkStrategy = new MagicLink.Strategy(
 
 function sendEmailToUser(user: Express.User, token: string) {
   const link = WEBSITE_URL + "/auth/email/verify?token=" + token;
-  const msg = {
-    to: user.email,
-    from: SMTP_EMAIL,
+  const mail: Mail = {
+    to: [{ email: user.email }],
+    from: {
+      name: "Testing Grounds",
+      email: MAILTRAP_SENDER_EMAIL,
+    },
     subject: "Sign in to Test Website",
     text:
       "Hello! Click the link below to finish signing in to Todos.\r\n\r\n" +
@@ -28,7 +36,7 @@ function sendEmailToUser(user: Express.User, token: string) {
       link +
       '">Sign in</a></p>',
   };
-  return transporter.sendMail(msg);
+  return transporter.send(mail);
 }
 
 function verifyUser(user: Express.User) {
