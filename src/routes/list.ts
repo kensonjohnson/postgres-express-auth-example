@@ -6,14 +6,14 @@ import {
   deleteList,
 } from "../controllers/list-controller.js";
 
-const router = Router();
+const listRouter = Router();
 
-router.get("/", getLists);
+listRouter.get("/", getLists);
 
-router.post("/create", createList);
+listRouter.post("/create", createList);
 
-router.put("/update/:id", updateList);
+listRouter.put("/update/:id", updateList);
 
-router.delete("/delete/:id", deleteList);
+listRouter.delete("/delete/:id", deleteList);
 
-export default router;
+export { listRouter };
