@@ -164,8 +164,6 @@ export async function handleChatSubmission(req: Request, res: Response) {
       const balance =
         Number(credits.at(0)?.credit) - Number(debits.at(0)?.debit);
 
-      req.log.info({ balance, conversationId }, "User balance");
-
       await tx
         .update(UserTable)
         .set({ credit_balance: balance })
@@ -190,11 +188,9 @@ export async function handleChatSubmission(req: Request, res: Response) {
           title: "Untitled Conversation",
         })
         .returning({ id: ConversationTable.id });
-      req.log.info({ newId }, "new conversation id");
       conversationId = newId.at(0)!.id;
     }
 
-    req.log.info({ conversationId }, "conversation id");
     // Store the message in the database.
     await db.insert(MessageTable).values({
       conversation_id: conversationId,
@@ -217,8 +213,6 @@ export async function handleChatSubmission(req: Request, res: Response) {
         content: "You are a helpful assistant.",
       });
     }
-
-    req.log.info(messages, "first 10 messages");
 
     const stream = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
