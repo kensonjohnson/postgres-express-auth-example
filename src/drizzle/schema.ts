@@ -67,28 +67,19 @@ export const ListTable = pgTable("list", {
   last_updated: timestamp("last_updated", { mode: "date" }).defaultNow(),
 });
 
-export const TaskTable = pgTable(
-  "task",
-  {
-    id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
-    list_id: bigserial("list_id", { mode: "number" })
-      .notNull()
-      .references(() => ListTable.id, { onDelete: "cascade" }),
-    title: varchar("title", { length: 255 }).notNull(),
-    description: text("description"),
-    completed: boolean("completed").default(false).notNull(),
-    created_on: timestamp("created_on", { mode: "date" })
-      .defaultNow()
-      .notNull(),
-    last_updated: timestamp("last_updated", { mode: "date" })
-      .defaultNow()
-      .notNull(),
-  },
-  // Update the last_updated column on ListTable when a task is inserted or updated
-  (table) => {
-    return {};
-  }
-);
+export const TaskTable = pgTable("task", {
+  id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
+  list_id: bigserial("list_id", { mode: "number" })
+    .notNull()
+    .references(() => ListTable.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  completed: boolean("completed").default(false).notNull(),
+  created_on: timestamp("created_on", { mode: "date" }).defaultNow().notNull(),
+  last_updated: timestamp("last_updated", { mode: "date" })
+    .defaultNow()
+    .notNull(),
+});
 
 export const ConversationTable = pgTable("conversation", {
   id: bigserial("id", { mode: "number" }).primaryKey().notNull(),
