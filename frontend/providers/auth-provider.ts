@@ -1,5 +1,3 @@
-const TEN_MINUTES = 1000 * 60 * 10;
-
 export class AuthProvider {
   isAuthenticated: boolean = false;
   #user: User | null = null;

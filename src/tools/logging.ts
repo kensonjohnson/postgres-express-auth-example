@@ -2,7 +2,7 @@ import { pinoHttp, type Options } from "pino-http";
 import { pino, type Logger } from "pino";
 
 // Use existing logger
-let options: Options = {
+const options: Options = {
   logger: pino(),
 };
 
