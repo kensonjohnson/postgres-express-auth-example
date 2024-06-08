@@ -6,8 +6,6 @@ export class AuthProvider {
   #authenticating: boolean = true;
   #refreshingUser: boolean = false;
   #initialSetupComplete: boolean = false;
-  #lastUpdateTimestamp: number = 0;
-  #refreshTimeout: number | null = null;
 
   constructor() {
     this.#initialSetup();
@@ -15,9 +13,6 @@ export class AuthProvider {
 
   get ready() {
     return new Promise((resolve) => {
-      if (Date.now() - this.#lastUpdateTimestamp < TEN_MINUTES) {
-        this.refreshUser();
-      }
       const interval = setInterval(() => {
         if (
           !this.#authenticating &&
@@ -38,9 +33,6 @@ export class AuthProvider {
   async #initialSetup() {
     await this.authenticate();
     await this.refreshUser();
-    this.#refreshTimeout = window.setTimeout(() => {
-      this.refreshUser();
-    }, TEN_MINUTES);
     this.#initialSetupComplete = true;
   }
 
@@ -71,27 +63,14 @@ export class AuthProvider {
       this.#user = null;
       this.isAuthenticated = false;
     } finally {
-      this.#lastUpdateTimestamp = Date.now();
-      this.resetTimeout();
+      this.#refreshingUser = false;
     }
-    this.#refreshingUser = false;
-  }
-
-  resetTimeout() {
-    if (this.#refreshTimeout) {
-      clearTimeout(this.#refreshTimeout);
-    }
-    this.#refreshTimeout = window.setTimeout(() => {
-      this.refreshUser();
-    }, TEN_MINUTES);
   }
 
   async logout() {
     await fetch("/auth/logout", { method: "POST" });
     this.isAuthenticated = false;
     this.#user = null;
-    this.#lastUpdateTimestamp = 0;
-    this.#refreshTimeout = null;
   }
 }
 
