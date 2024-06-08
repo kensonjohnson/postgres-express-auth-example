@@ -1,5 +1,4 @@
 import MagicLink from "passport-magic-link";
-import { pool } from "../../db/db.js";
 import { db } from "../../drizzle/db.js";
 import { transporter } from "../mailtrap/transporter.js";
 import type { Mail } from "mailtrap";
