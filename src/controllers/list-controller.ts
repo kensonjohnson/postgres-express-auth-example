@@ -11,8 +11,6 @@ export async function getLists(req: Request, res: Response) {
       .from(ListTable)
       .where(eq(ListTable.user_id, userId));
 
-    req.log.info({ lists }, "Fetched lists.");
-
     if (!lists) throw new Error("Failed to fetch lists.");
 
     // Queue the creation of adding tasks to each list
