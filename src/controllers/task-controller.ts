@@ -17,7 +17,7 @@ export async function getTasks(req: Request, res: Response) {
 
     res.json(tasks);
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to get tasks" });
   }
 }
@@ -44,7 +44,7 @@ export async function createTask(req: Request, res: Response) {
 
     res.json(insert.at(0));
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to create task" });
   }
 }
@@ -64,7 +64,7 @@ export async function deleteTask(req: Request, res: Response) {
 
     res.status(204).send();
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to delete task" });
   }
 }
@@ -92,7 +92,7 @@ export async function updateTitle(req: Request, res: Response) {
 
     res.json(update.at(0));
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to update task" });
   }
 }
@@ -116,7 +116,7 @@ export async function updateCompleted(req: Request, res: Response) {
 
     res.json(update.at(0));
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to update task" });
   }
 }

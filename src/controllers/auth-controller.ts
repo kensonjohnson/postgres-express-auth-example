@@ -17,13 +17,13 @@ export async function parseUserToken(req: Request, res: Response) {
 
 export async function logoutUser(req: Request, res: Response) {
   req.logout((error) => {
-    if (error) console.error("Error in logout", error);
+    if (error) req.log.error("Error in logout", error);
     // This part is necessary to remove the session cookie,
     // as express-session does not remove it. Without this,
     // the res.cookie() below will not work.
     if (req.session && req.session.cookie) {
       req.session.destroy((error) => {
-        if (error) console.error("Error in session destroy", error);
+        if (error) req.log.error("Error in session destroy", error);
       });
     }
     // Overwrite the cookie to make sure it's removed. This one

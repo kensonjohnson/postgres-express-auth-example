@@ -9,6 +9,7 @@ import {
 } from "../../constants.js";
 import { eq } from "drizzle-orm";
 import { UserTable } from "../../drizzle/schema.js";
+import { pinoLogger } from "../../tools/logging.js";
 
 export const MagicLinkStrategy = new MagicLink.Strategy(
   {
@@ -64,7 +65,7 @@ function verifyUser(verify: Express.User) {
 
       return resolve(newUser);
     } catch (error) {
-      console.error(error);
+      pinoLogger.error(error);
       return reject(error);
     }
   });

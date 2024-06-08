@@ -31,7 +31,7 @@ export async function getChat(req: Request, res: Response) {
 
     res.json(conversations);
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).end();
   }
 }
@@ -66,7 +66,7 @@ export async function createConversation(req: Request, res: Response) {
 
     res.json(insert.at(0));
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).end();
   }
 }
@@ -98,7 +98,7 @@ export async function editConversationTitle(req: Request, res: Response) {
 
     res.end().status(204);
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).end();
   }
 }
@@ -115,7 +115,7 @@ export async function deleteConversation(req: Request, res: Response) {
       .where(eq(ConversationTable.id, parseInt(id)));
     res.end().status(204);
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).end();
   }
 }
@@ -265,7 +265,7 @@ export async function handleChatSubmission(req: Request, res: Response) {
 
     res.end();
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).end();
   }
 }

@@ -1,23 +1,22 @@
 import { pinoHttp, type Options } from "pino-http";
 import { pino, type Logger } from "pino";
 
-let options: Options = {};
+// Use existing logger
+const options: Options = {
+  logger: pino(),
+};
 
-// Logging is way too verbose with the defaults,
-// so trim it back when in development.
 if (process.env.NODE_ENV === "development") {
-  options = {
-    transport: {
-      target: "pino-pretty",
+  options.transport = { target: "pino-pretty" };
+  // Logging is way too verbose with the defaults,
+  // so trim it back when in development.
+  options.autoLogging = false;
+  options.serializers = {
+    req: (req) => {
+      return `${req.method}: ${req.url}`;
     },
-    autoLogging: false,
-    serializers: {
-      req: (req) => {
-        return `${req.method}: ${req.url}`;
-      },
-      res: (res) => `${res.statusCode}`,
-      err: pino.stdSerializers.err,
-    },
+    res: (res) => `${res.statusCode}`,
+    err: pino.stdSerializers.err,
   };
 }
 

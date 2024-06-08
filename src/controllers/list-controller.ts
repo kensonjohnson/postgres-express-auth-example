@@ -29,7 +29,7 @@ export async function getLists(req: Request, res: Response) {
 
     res.json(finishedResults);
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to fetch lists." });
   }
 }
@@ -53,7 +53,7 @@ export async function getList(req: Request, res: Response) {
 
     res.status(200).json(singleList.at(0));
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to fetch list." });
   }
 }
@@ -82,7 +82,7 @@ export async function createList(req: Request, res: Response) {
 
     res.status(201).json(insert.at(0));
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to create list." });
   }
 }
@@ -103,7 +103,7 @@ export async function updateList(req: Request, res: Response) {
 
     res.status(200).json(update.at(0));
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to update list." });
   }
 }
@@ -116,7 +116,7 @@ export async function deleteList(req: Request, res: Response) {
 
     res.json({ message: "List deleted." });
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.status(500).json({ error: "Failed to delete list." });
   }
 }

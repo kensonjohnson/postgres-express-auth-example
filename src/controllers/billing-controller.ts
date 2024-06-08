@@ -12,7 +12,7 @@ export async function getBalance(req: Request, res: Response) {
       .where(eq(UserTable.id, userId));
     res.json(user);
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
   }
 }
 
@@ -23,7 +23,7 @@ export async function addCredits(req: Request, res: Response) {
 
     res.json({ message: "Credit successful", amount: 10 });
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.end().status(500);
   }
 }
@@ -36,7 +36,7 @@ export async function removeCredits(req: Request, res: Response) {
 
     res.json({ message: "Debit successful", amount: 1 });
   } catch (error) {
-    console.error(error);
+    req.log.error(error);
     res.end().status(500);
   }
 }
