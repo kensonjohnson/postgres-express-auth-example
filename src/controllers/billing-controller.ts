@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../drizzle/db.js";
 import { CreditTable, DebitTable, UserTable } from "../drizzle/schema.js";
-import { and, eq, gt, ne, sum } from "drizzle-orm";
+import { and, eq, gt, sum } from "drizzle-orm";
 
 export async function getBalance(req: Request, res: Response) {
   const userId = req.user!.id;
