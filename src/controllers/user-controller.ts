@@ -4,7 +4,7 @@ import { UserTable } from "../drizzle/schema.js";
 import { eq } from "drizzle-orm";
 
 export async function getUser(req: Request, res: Response) {
-  const user = db
+  const user = await db
     .select()
     .from(UserTable)
     .where(eq(UserTable.id, req.user!.id));
