@@ -1,24 +1,16 @@
 import type { Request, Response } from "express";
-import { pool } from "../db/db.js";
+import { db } from "../drizzle/db.js";
+import { CreditTable, DebitTable, UserTable } from "../drizzle/schema.js";
+import { eq } from "drizzle-orm";
 
 export async function getBalance(req: Request, res: Response) {
   const userId = req.user!.id;
   try {
-    const query = await pool.query(
-      "SELECT credit_balance AS balance FROM users WHERE id = $1",
-      [userId]
-    );
-    console.log("Balance for user " + userId + " is " + query.rows[0].balance);
-
-    // Update the user's credit balance in the session
-    const updatedUser = req.user!;
-    updatedUser.credit_balance = query.rows[0].balance;
-    req.logIn(updatedUser, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-    res.json(query.rows[0]);
+    const [user] = await db
+      .select({ credit_balance: UserTable.credit_balance })
+      .from(UserTable)
+      .where(eq(UserTable.id, userId));
+    res.json(user);
   } catch (error) {
     console.error(error);
   }
@@ -27,9 +19,7 @@ export async function getBalance(req: Request, res: Response) {
 export async function addCredits(req: Request, res: Response) {
   const userId = req.user!.id;
   try {
-    await pool.query("INSERT INTO credit (user_id, amount) VALUES ($1, 10)", [
-      userId,
-    ]);
+    await db.insert(CreditTable).values({ user_id: userId, amount: 10 });
 
     res.json({ message: "Credit successful", amount: 10 });
   } catch (error) {
@@ -42,16 +32,7 @@ export async function removeCredits(req: Request, res: Response) {
   const userId = req.user!.id;
 
   try {
-    await pool.query("INSERT INTO debit (user_id, amount) VALUES ($1, 1)", [
-      userId,
-    ]);
-
-    // Update the user's credit balance in the session.
-    // Right now, only 1 credit is removed at a time,
-    // so we can just subtract 1 from the current balance.
-    const updatedUser = req.user!;
-    updatedUser.credit_balance -= 1;
-    req.logIn(updatedUser, (err) => console.error(err));
+    await db.insert(DebitTable).values({ user_id: userId, amount: 1 });
 
     res.json({ message: "Debit successful", amount: 1 });
   } catch (error) {
