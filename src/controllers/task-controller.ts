@@ -1,20 +1,21 @@
 import type { Request, Response } from "express";
-import { pool } from "../db/db.js";
+import { db } from "../drizzle/db.js";
+import { TaskTable } from "../drizzle/schema.js";
+import { eq } from "drizzle-orm";
 
 export async function getTasks(req: Request, res: Response) {
   const { listId } = req.query;
-  if (!listId) {
-    return res.status(400).json({ error: "Missing listId" });
+  if (!listId || typeof listId !== "string" || isNaN(parseInt(listId))) {
+    return res.status(400).json({ error: "listId missing or not a number" });
   }
 
   try {
-    const query = await pool.query("SELECT * FROM task WHERE list_id = $1", [
-      listId,
-    ]);
+    const tasks = await db
+      .select()
+      .from(TaskTable)
+      .where(eq(TaskTable.list_id, parseInt(listId)));
 
-    if (!query) throw new Error("Failed to get tasks");
-
-    res.json(query.rows);
+    res.json(tasks);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to get tasks" });
@@ -27,15 +28,21 @@ export async function createTask(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing listId or title" });
   }
 
+  if (isNaN(parseInt(listId))) {
+    return res.status(400).json({ error: "listId must be a number" });
+  }
+
+  if (title.length > 255) {
+    return res.status(400).json({ error: "Title is too long" });
+  }
+
   try {
-    const query = await pool.query(
-      "INSERT INTO task (list_id, title) VALUES ($1, $2) RETURNING *",
-      [listId, title]
-    );
+    const insert = await db
+      .insert(TaskTable)
+      .values({ list_id: listId, title })
+      .returning();
 
-    if (!query) throw new Error("Failed to create task");
-
-    res.json(query.rows[0]);
+    res.json(insert.at(0));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create task" });
@@ -48,10 +55,12 @@ export async function deleteTask(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing id" });
   }
 
-  try {
-    const query = await pool.query("DELETE FROM task WHERE id = $1", [id]);
+  if (isNaN(parseInt(id))) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
 
-    if (!query) throw new Error("Failed to delete task");
+  try {
+    await db.delete(TaskTable).where(eq(TaskTable.id, parseInt(id)));
 
     res.status(204).send();
   } catch (error) {
@@ -66,15 +75,22 @@ export async function updateTitle(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing id or title" });
   }
 
+  if (isNaN(parseInt(id))) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
+
+  if (title.length > 255) {
+    return res.status(400).json({ error: "Title is too long" });
+  }
+
   try {
-    const query = await pool.query(
-      "UPDATE task SET title = $1 WHERE id = $2 RETURNING *",
-      [title, id]
-    );
+    const update = await db
+      .update(TaskTable)
+      .set({ title })
+      .where(eq(TaskTable.id, parseInt(id!)))
+      .returning();
 
-    if (!query) throw new Error("Failed to update task");
-
-    res.json(query.rows[0]);
+    res.json(update.at(0));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update task" });
@@ -87,15 +103,18 @@ export async function updateCompleted(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing id or completed" });
   }
 
+  if (isNaN(parseInt(id))) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
+
   try {
-    const query = await pool.query(
-      "UPDATE task SET completed = $1 WHERE id = $2 RETURNING *",
-      [Boolean(completed), id]
-    );
+    const update = await db
+      .update(TaskTable)
+      .set({ completed })
+      .where(eq(TaskTable.id, id))
+      .returning();
 
-    if (!query) throw new Error("Failed to update task");
-
-    res.json(query.rows[0]);
+    res.json(update.at(0));
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update task" });

@@ -1,9 +1,13 @@
 import type { Request, Response } from "express";
-import { pool } from "../db/db.js";
+import { db } from "../drizzle/db.js";
+import { UserTable } from "../drizzle/schema.js";
+import { eq } from "drizzle-orm";
 
 export async function getUser(req: Request, res: Response) {
-  const query = await pool.query("SELECT * FROM users WHERE id = $1", [
-    req.user!.id,
-  ]);
-  res.json(query.rows[0]);
+  const user = db
+    .select()
+    .from(UserTable)
+    .where(eq(UserTable.id, req.user!.id));
+
+  res.json(user);
 }

@@ -7,16 +7,16 @@ import {
   updateTitle,
 } from "../controllers/task-controller.js";
 
-const router = Router();
+const taskRouter = Router();
 
-router.get("/", getTasks);
+taskRouter.get("/", getTasks);
 
-router.post("/create", createTask);
+taskRouter.post("/create", createTask);
 
-router.delete("/delete/:id", deleteTask);
+taskRouter.delete("/delete/:id", deleteTask);
 
-router.post("/update/title", updateTitle);
+taskRouter.post("/update/title", updateTitle);
 
-router.post("/update/completed", updateCompleted);
+taskRouter.post("/update/completed", updateCompleted);
 
-export default router;
+export { taskRouter };

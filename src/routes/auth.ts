@@ -6,11 +6,11 @@ import {
   logoutUser,
 } from "../controllers/auth-controller.js";
 
-const router = Router();
+const authRouter = Router();
 
-router.get("/check", ensureAuthenticated, parseUserToken);
+authRouter.get("/check", ensureAuthenticated, parseUserToken);
 
-router.post(
+authRouter.post(
   "/email",
   passport.authenticate("magiclink", {
     // @ts-expect-error: Added by passport-magic-link, which doesn't provide TypeScript types
@@ -22,7 +22,7 @@ router.post(
   }
 );
 
-router.get(
+authRouter.get(
   "/email/verify",
   passport.authenticate("magiclink", {
     successRedirect: "/",
@@ -30,6 +30,6 @@ router.get(
   })
 );
 
-router.post("/logout", logoutUser);
+authRouter.post("/logout", logoutUser);
 
-export default router;
+export { authRouter };

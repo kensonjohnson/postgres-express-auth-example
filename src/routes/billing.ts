@@ -5,12 +5,12 @@ import {
   removeCredits,
 } from "../controllers/billing-controller.js";
 
-const router = Router();
+const billingRouter = Router();
 
-router.get("/balance", getBalance);
+billingRouter.get("/balance", getBalance);
 
-router.post("/credit", addCredits);
+billingRouter.post("/credit", addCredits);
 
-router.post("/charge", removeCredits);
+billingRouter.post("/charge", removeCredits);
 
-export default router;
+export { billingRouter };

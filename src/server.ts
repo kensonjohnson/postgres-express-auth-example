@@ -1,12 +1,17 @@
 import express from "express";
 import { configurePassport } from "./controllers/passport/passport.js";
 import { PORT, WEBSITE_URL } from "./constants.js";
+import { httpLogger } from "./tools/logging.js";
+import { setupRouters } from "./routes/setup-routers.js";
 
 const app = express();
 
-// Middleware
+/*------------------
+---- Middleware ----
+------------------*/
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(httpLogger);
 
 // Serve static files
 app.use(express.static("build/frontend"));
@@ -14,24 +19,12 @@ app.use(express.static("build/frontend"));
 // Passport
 configurePassport(app);
 
-// Routes
-import authRouter from "./routes/auth.js";
-import userController from "./routes/user.js";
-import listRouter from "./routes/list.js";
-import taskRouter from "./routes/task.js";
-import conversationRouter from "./routes/conversation.js";
-import billingRouter from "./routes/billing.js";
-import { ensureAuthenticated } from "./controllers/auth-controller.js";
-import { catchUnmatchedRequestAndRedirectEncoded } from "./controllers/root-controller.js";
+/*------------------
+----   Routes   ----
+------------------*/
+setupRouters(app);
 
-// app.use("/", rootRouter); // serve static files
-app.use("/auth", authRouter);
-app.use("/user", ensureAuthenticated, userController);
-app.use("/list", ensureAuthenticated, listRouter);
-app.use("/task", ensureAuthenticated, taskRouter);
-app.use("/conversation", ensureAuthenticated, conversationRouter);
-app.use("/billing", ensureAuthenticated, billingRouter);
-app.all("*", catchUnmatchedRequestAndRedirectEncoded);
-
-// Start server
+/*------------------
+--- Start Server ---
+------------------*/
 app.listen(PORT, () => console.log(`Server is running at ${WEBSITE_URL}`));

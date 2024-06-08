@@ -1,7 +1,14 @@
 import MagicLink from "passport-magic-link";
-import { pool } from "../../db/db.js";
-import { transporter } from "../nodemailer/transporter.js";
-import { COOKIE_SECRET, WEBSITE_URL, SMTP_EMAIL } from "../../constants.js";
+import { db } from "../../drizzle/db.js";
+import { transporter } from "../mailtrap/transporter.js";
+import type { Mail } from "mailtrap";
+import {
+  COOKIE_SECRET,
+  WEBSITE_URL,
+  MAILTRAP_SENDER_EMAIL,
+} from "../../constants.js";
+import { eq } from "drizzle-orm";
+import { UserTable } from "../../drizzle/schema.js";
 
 export const MagicLinkStrategy = new MagicLink.Strategy(
   {
@@ -16,9 +23,12 @@ export const MagicLinkStrategy = new MagicLink.Strategy(
 
 function sendEmailToUser(user: Express.User, token: string) {
   const link = WEBSITE_URL + "/auth/email/verify?token=" + token;
-  const msg = {
-    to: user.email,
-    from: SMTP_EMAIL,
+  const mail: Mail = {
+    to: [{ email: user.email }],
+    from: {
+      name: "Testing Grounds",
+      email: MAILTRAP_SENDER_EMAIL,
+    },
     subject: "Sign in to Test Website",
     text:
       "Hello! Click the link below to finish signing in to Todos.\r\n\r\n" +
@@ -28,35 +38,31 @@ function sendEmailToUser(user: Express.User, token: string) {
       link +
       '">Sign in</a></p>',
   };
-  return transporter.sendMail(msg);
+  return transporter.send(mail);
 }
 
-function verifyUser(user: Express.User) {
+function verifyUser(verify: Express.User) {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
       // Check for the user's email in the database
-      const query = await pool.query("SELECT * FROM users WHERE email = $1", [
-        user.email,
-      ]);
+      const user = await db.query.UserTable.findFirst({
+        where: eq(UserTable.email, verify.email),
+      });
 
-      // If the query fails, throw
-      if (!query) throw new Error("Failed to fetch user details.");
-
-      // Check if we found a user
-      if (query.rowCount && query.rowCount > 0) {
-        return resolve(query.rows[0]);
+      if (user) {
+        return resolve(user);
       }
 
       // If no user found, create one
-      const insert = await pool.query(
-        "INSERT INTO users (email, email_verified) VALUES ($1, $2) RETURNING *",
-        [user.email, true]
-      );
+      const [newUser] = await db
+        .insert(UserTable)
+        .values({ email: verify.email, email_verified: true })
+        .returning();
 
-      if (!insert) throw new Error("Failed to create user");
+      if (!newUser) throw new Error("Failed to create user");
 
-      return resolve(insert.rows[0]);
+      return resolve(newUser);
     } catch (error) {
       console.error(error);
       return reject(error);

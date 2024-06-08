@@ -8,18 +8,18 @@ import {
   handleChatSubmission,
 } from "../controllers/conversation-controller.js";
 
-const router = Router();
+const conversationRouter = Router();
 
-router.get("/chat/:id", getChat);
+conversationRouter.get("/chat/:id", getChat);
 
-router.get("/list", getConversations);
+conversationRouter.get("/list", getConversations);
 
-router.post("/new", createConversation);
+conversationRouter.post("/new", createConversation);
 
-router.put("/edit", editConversationTitle);
+conversationRouter.put("/edit", editConversationTitle);
 
-router.delete("/delete", deleteConversation);
+conversationRouter.delete("/delete", deleteConversation);
 
-router.post("/submit", handleChatSubmission);
+conversationRouter.post("/submit", handleChatSubmission);
 
-export default router;
+export { conversationRouter };
