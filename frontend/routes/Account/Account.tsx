@@ -65,7 +65,7 @@ export function Account() {
             <button type="submit">Add Credits</button>
           </Form>
         </div>
-        <p>Credits last for 10 minutes</p>
+        <p>Credits last for 60 days</p>
       </main>
     </div>
   );
